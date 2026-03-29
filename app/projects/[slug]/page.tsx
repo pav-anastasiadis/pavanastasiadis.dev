@@ -30,7 +30,7 @@ export default async function ProjectDetailPage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-screen p-8 max-w-4xl mx-auto crt-vignette scanlines">
+    <main className="min-h-screen p-8 max-w-4xl mx-auto">
       <div className="mb-8 flex items-center gap-4 text-[#808080]">
         <Link
           href="/projects"

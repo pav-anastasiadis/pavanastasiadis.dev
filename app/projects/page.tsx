@@ -11,7 +11,7 @@ export default function ProjectsPage() {
   const projects = getAllProjects();
 
   return (
-    <main className="min-h-screen p-8 max-w-6xl mx-auto crt-vignette scanlines">
+    <main className="min-h-screen p-8 max-w-6xl mx-auto">
       <h1
         className="text-3xl mb-12 text-center neon-glow-cyan"
         style={{ fontFamily: 'var(--font-pixel)' }}
