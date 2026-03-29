@@ -1,0 +1,30 @@
+
+> pavanastasiadis.dev@0.1.0 build /home/pav/Work/pav-anastasiadis/pavanastasiadis.dev
+> next build
+
+▲ Next.js 16.2.1 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.6s
+  Running TypeScript ...
+  Finished TypeScript in 2.3s ...
+  Collecting page data using 5 workers ...
+  Generating static pages using 5 workers (0/4) ...
+  Generating static pages using 5 workers (1/4) 
+  Generating static pages using 5 workers (2/4) 
+  Generating static pages using 5 workers (3/4) 
+✓ Generating static pages using 5 workers (4/4) in 461ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+
+> pavanastasiadis.dev@0.1.0 lint /home/pav/Work/pav-anastasiadis/pavanastasiadis.dev
+> eslint .
+
+EXIT CODE: 0
