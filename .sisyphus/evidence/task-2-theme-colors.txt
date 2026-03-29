@@ -1,0 +1,7 @@
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+PASS: Tailwind v4 neon colors compiled
+17
