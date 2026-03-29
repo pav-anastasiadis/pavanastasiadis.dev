@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const project = getProjectBySlug(slug);
   if (!project) return {};
-  return { title: `${project.title} | Retro Portfolio`, description: project.description };
+  return { title: `${project.title} | Pav Anastasiadis`, description: project.description };
 }
 
 export default async function ProjectDetailPage({ params }: Props) {
@@ -30,32 +30,28 @@ export default async function ProjectDetailPage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-screen p-8 max-w-4xl mx-auto">
-      <div className="mb-8 flex items-center gap-4 text-[#808080]">
-        <Link
-          href="/projects"
-          className="hover:text-[#ffffff] transition-colors"
-          style={{ fontFamily: 'var(--font-pixel)', fontSize: '0.875rem' }}
-        >
-          &lt; BACK
-        </Link>
-      </div>
+    <main className="min-h-screen px-4 py-20 max-w-3xl mx-auto">
+      <Link
+        href="/projects"
+        className="text-sm text-on-surface-variant hover:text-on-surface transition-colors mb-10 inline-block"
+      >
+        ← Back to projects
+      </Link>
 
-      <div className="bevel-raised bg-[#1a1a1a] p-8 md:p-12">
+      <div className="bg-surface-container-lowest p-8 md:p-12 rounded-sm">
         <h1
           data-testid="project-title"
-          className="text-4xl md:text-5xl mb-6 text-[#00ffff] neon-glow-cyan"
-          style={{ fontFamily: 'var(--font-pixel)', lineHeight: '1.4' }}
+          className="text-5xl font-bold tracking-tight text-on-surface mb-6"
+          style={{ letterSpacing: '-0.02em' }}
         >
           {project.title}
         </h1>
 
-        <div className="flex flex-wrap gap-4 mb-8">
+        <div className="flex flex-wrap gap-2 mb-8">
           {project.tags.map((tag) => (
             <span
               key={tag}
-              className="px-3 py-1 bg-[#0a0a0a] text-[#00ff00] border border-[#00ff00]"
-              style={{ fontFamily: 'var(--font-terminal)', fontSize: '1.25rem' }}
+              className="bg-surface-container-low text-on-surface-variant text-xs px-2 py-1 rounded-full"
             >
               {tag}
             </span>
@@ -64,8 +60,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
         <p
           data-testid="project-description"
-          className="text-2xl text-[#c0c0c0] mb-12"
-          style={{ fontFamily: 'var(--font-terminal)', lineHeight: '1.8' }}
+          className="text-xl text-on-surface-variant mb-12 leading-relaxed"
         >
           {project.description}
         </p>
@@ -75,10 +70,9 @@ export default async function ProjectDetailPage({ params }: Props) {
             <Link
               href={`/projects/${project.slug}/demo`}
               data-testid="demo-link"
-              className="bevel-raised bg-[#000000] text-[#00ff00] px-6 py-4 hover:bg-[#1a1a1a] transition-colors neon-border"
-              style={{ fontFamily: 'var(--font-pixel)', fontSize: '1rem' }}
+              className="bg-gradient-to-br from-primary to-primary-dim text-on-primary rounded-md px-6 py-3 text-sm font-medium inline-block transition-transform hover:-translate-y-0.5"
             >
-              LAUNCH DEMO &rarr;
+              Launch Demo &rarr;
             </Link>
           )}
 
@@ -88,10 +82,9 @@ export default async function ProjectDetailPage({ params }: Props) {
                 href={project.repo}
                 target="_blank"
                 rel="noreferrer"
-                className="text-[#808080] hover:text-[#ffffff] underline"
-                style={{ fontFamily: 'var(--font-terminal)', fontSize: '1.5rem' }}
+                className="text-primary underline hover:text-primary-dim transition-colors text-sm"
               >
-                [ VIEW SOURCE ]
+                View Source
               </a>
             )}
             {project.url && (
@@ -99,10 +92,9 @@ export default async function ProjectDetailPage({ params }: Props) {
                 href={project.url}
                 target="_blank"
                 rel="noreferrer"
-                className="text-[#808080] hover:text-[#ffffff] underline"
-                style={{ fontFamily: 'var(--font-terminal)', fontSize: '1.5rem' }}
+                className="text-primary underline hover:text-primary-dim transition-colors text-sm"
               >
-                [ EXTERNAL LINK ]
+                External Link
               </a>
             )}
           </div>

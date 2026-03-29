@@ -3,20 +3,20 @@ import Link from 'next/link';
 import { getAllProjects } from '@/lib/projects';
 
 export const metadata = {
-  title: 'Projects | Retro Portfolio',
-  description: 'A collection of retro-themed web projects.',
+  title: 'Projects | Pav Anastasiadis',
+  description: 'A collection of projects by Pav Anastasiadis',
 };
 
 export default function ProjectsPage() {
   const projects = getAllProjects();
 
   return (
-    <main className="min-h-screen p-8 max-w-6xl mx-auto">
+    <main className="min-h-screen px-4 py-20 max-w-4xl mx-auto">
       <h1
-        className="text-3xl mb-12 text-center neon-glow-cyan"
-        style={{ fontFamily: 'var(--font-pixel)' }}
+        className="text-5xl font-bold tracking-tight text-on-surface mb-12"
+        style={{ letterSpacing: '-0.02em' }}
       >
-        PROJECTS_
+        Projects
       </h1>
 
       <div
@@ -28,38 +28,22 @@ export default function ProjectsPage() {
             key={project.slug}
             href={`/projects/${project.slug}`}
             data-testid="project-card"
-            className="bevel-raised bg-[#1a1a1a] p-6 flex flex-col hover:bg-[#2a2a2a] transition-colors"
+            className="bg-surface-container-lowest p-8 rounded-sm hover:ambient-shadow transition-shadow flex flex-col"
           >
             <div className="flex justify-between items-start mb-4">
-              <h2
-                className="text-lg text-[#00ffff]"
-                style={{ fontFamily: 'var(--font-pixel)', lineHeight: '1.4' }}
-              >
-                {project.title}
-              </h2>
+              <h2 className="text-lg text-on-surface font-semibold">{project.title}</h2>
               {project.demoAvailable && (
-                <span
-                  className="text-xs px-2 py-1 neon-border neon-glow-green text-[#00ff00]"
-                  style={{ fontFamily: 'var(--font-pixel)' }}
-                >
-                  VIEW DEMO
-                </span>
+                <span className="text-primary text-xs font-medium">VIEW DEMO</span>
               )}
             </div>
 
-            <p
-              className="text-xl text-[#c0c0c0] mb-6 flex-grow"
-              style={{ fontFamily: 'var(--font-terminal)', lineHeight: '1.6' }}
-            >
-              {project.description}
-            </p>
+            <p className="text-on-surface-variant mb-6 flex-grow">{project.description}</p>
 
             <div className="flex flex-wrap gap-2 mt-auto">
               {project.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-1 bg-[#0a0a0a] text-[#808080] border border-[#404040]"
-                  style={{ fontFamily: 'var(--font-terminal)', fontSize: '1.125rem' }}
+                  className="bg-surface-container-low text-on-surface-variant text-xs px-2 py-1 rounded-full"
                 >
                   {tag}
                 </span>

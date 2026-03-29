@@ -7,12 +7,10 @@ export default function DemoLoader({ slug }: { slug: string }) {
     ssr: false,
     loading: () => (
       <div className="flex flex-col items-center justify-center py-20">
-        <div className="text-[#00ff00] animate-pulse" style={{ fontFamily: 'var(--font-pixel)' }}>
-          LOADING DEMO...
+        <div className="text-on-surface-variant text-lg font-medium animate-pulse">
+          Loading demo...
         </div>
-        <div className="mt-4 text-[#808080]" style={{ fontFamily: 'var(--font-terminal)' }}>
-          INITIALIZING CANVAS CONTEXT
-        </div>
+        <div className="mt-4 text-on-surface-variant text-sm">Preparing canvas...</div>
       </div>
     ),
   });

@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props) {
   const project = getProjectBySlug(slug);
   if (!project || !project.demoAvailable) return {};
   return {
-    title: `Demo: ${project.title} | Retro Portfolio`,
+    title: `Demo: ${project.title} | Pav Anastasiadis`,
     description: `Interactive demo for ${project.title}`,
   };
 }
@@ -35,31 +35,29 @@ export default async function ProjectDemoPage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-screen p-8 max-w-5xl mx-auto">
-      <div className="mb-8 flex items-center gap-4 text-[#808080]">
-        <Link
-          href={`/projects/${slug}`}
-          className="hover:text-[#ffffff] transition-colors"
-          style={{ fontFamily: 'var(--font-pixel)', fontSize: '0.875rem' }}
-        >
-          &lt; BACK TO PROJECT
-        </Link>
-      </div>
+    <main className="min-h-screen px-4 py-20 max-w-4xl mx-auto">
+      <Link
+        href={`/projects/${slug}`}
+        className="text-sm text-on-surface-variant hover:text-on-surface transition-colors mb-10 inline-block"
+      >
+        ← Back to project
+      </Link>
 
-      <div className="bevel-raised bg-[#1a1a1a] p-8 md:p-12" data-testid="demo-container">
+      <div
+        className="bg-surface-container-lowest rounded-sm p-6 md:p-12"
+        data-testid="demo-container"
+      >
         <h1
-          className="text-3xl md:text-4xl mb-8 text-[#ff00ff] neon-glow-pink text-center"
-          style={{ fontFamily: 'var(--font-pixel)', lineHeight: '1.4' }}
+          className="text-4xl font-bold tracking-tight text-on-surface mb-6 text-center"
+          style={{ letterSpacing: '-0.02em' }}
         >
-          {project.title} DEMO
+          {project.title} Demo
         </h1>
 
-        <div className="bevel-sunken bg-[#0a0a0a] p-4 md:p-8 overflow-auto flex justify-center items-center min-h-[600px]">
+        <div className="bg-surface-container rounded-sm p-4 md:p-8 overflow-auto flex justify-center items-center min-h-[600px]">
           <Suspense
             fallback={
-              <div className="text-[#00ff00]" style={{ fontFamily: 'var(--font-pixel)' }}>
-                LOADING...
-              </div>
+              <div className="text-on-surface-variant animate-pulse p-8">Loading demo...</div>
             }
           >
             <DemoLoader slug={slug} />
