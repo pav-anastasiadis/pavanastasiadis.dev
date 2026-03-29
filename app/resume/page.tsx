@@ -1,180 +1,85 @@
 export default function ResumePage() {
   return (
-    <div
-      className="max-w-4xl mx-auto p-4 md:p-8"
-      style={{ fontFamily: 'var(--font-terminal)', fontSize: '1.2rem', color: '#c0c0c0' }}
-      data-testid="resume-content"
-    >
-      <div
-        className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-6"
-        style={{ marginBottom: '3rem' }}
-      >
-        <div>
-          <h1
-            style={{
-              fontFamily: 'var(--font-pixel)',
-              fontSize: '1.5rem',
-              color: '#00ff00',
-              marginBottom: '0.5rem',
-            }}
-            className="neon-glow-green"
-          >
-            RESUME.EXE
-          </h1>
-          <p>Execution time: 0.003ms</p>
-        </div>
+    <div className="max-w-4xl mx-auto px-4 py-20" data-testid="resume-content">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-6">
+        <h1
+          className="text-5xl font-bold tracking-tight text-on-surface mb-0"
+          style={{ letterSpacing: '-0.02em' }}
+        >
+          Resume
+        </h1>
 
         <a
           href="/resume.pdf"
           download
           data-testid="resume-download"
-          className="bevel-raised cursor-pointer hover:bg-neutral-800"
-          style={{
-            fontFamily: 'var(--font-pixel)',
-            fontSize: '0.8rem',
-            padding: '0.75rem 1.5rem',
-            color: '#00ff00',
-            textDecoration: 'none',
-            display: 'inline-block',
-            backgroundColor: '#1a1a1a',
-          }}
+          className="bg-gradient-to-br from-primary to-primary-dim text-on-primary rounded-md px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
         >
-          ▼ DOWNLOAD RESUME
+          Download Resume
         </a>
       </div>
 
-      <div
-        className="flex flex-col gap-12"
-        style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}
-      >
+      <div className="flex flex-col gap-12">
         <section>
-          <h2
-            style={{
-              fontFamily: 'var(--font-pixel)',
-              fontSize: '1rem',
-              color: '#00ffff',
-              marginBottom: '1.5rem',
-            }}
-            className="neon-glow-cyan"
-          >
-            &gt; WORK_HISTORY
-          </h2>
-          <div
-            className="flex flex-col gap-6"
-            style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
-          >
-            <div
-              className="bevel-sunken p-6"
-              style={{ backgroundColor: '#111', padding: '1.5rem' }}
-            >
-              <div
-                className="flex flex-col sm:flex-row justify-between sm:items-baseline mb-4"
-                style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}
-              >
-                <h3
-                  style={{
-                    fontFamily: 'var(--font-pixel)',
-                    fontSize: '0.9rem',
-                    color: '#ffffff',
-                    margin: 0,
-                  }}
-                >
-                  Senior Frontend Engineer
-                </h3>
-                <span style={{ color: '#00ff00' }}>2022 &ndash; Present</span>
-              </div>
-              <p className="mb-4" style={{ color: '#808080', marginBottom: '1rem' }}>
-                @ Acme Corp / Remote
+          <h2 className="text-2xl font-semibold text-on-surface mb-8">Experience</h2>
+          <div className="flex flex-col gap-6">
+            <div className="bg-surface-container-low rounded-sm p-8">
+              <h3 className="text-lg font-semibold text-on-surface">Senior Data Engineer</h3>
+              <p className="text-sm text-on-surface-variant mb-4">
+                @ StreamForge / Remote, 2023 &ndash; Present
               </p>
-              <ul
-                className="list-disc pl-6 space-y-2"
-                style={{ paddingLeft: '1.5rem', listStyleType: 'disc' }}
-              >
-                <li style={{ marginBottom: '0.5rem' }}>
-                  Architected and migrated legacy React codebase to Next.js 14 App Router, improving
-                  LCP by 45%.
+              <ul className="list-disc pl-6 space-y-2">
+                <li className="text-base text-on-surface-variant leading-relaxed">
+                  Architected end-to-end data pipelines using Apache Airflow and Python, processing
+                  5TB+ daily
                 </li>
-                <li style={{ marginBottom: '0.5rem' }}>
-                  Developed a unified design system using Tailwind CSS and Storybook, consumed by 5+
-                  product teams.
+                <li className="text-base text-on-surface-variant leading-relaxed">
+                  Designed dimensional models in BigQuery, reducing query costs by 40%
                 </li>
-                <li style={{ marginBottom: '0.5rem' }}>
-                  Mentored junior developers and implemented CI/CD pipelines for automated testing.
+                <li className="text-base text-on-surface-variant leading-relaxed">
+                  Implemented real-time streaming with Apache Kafka and Spark Structured Streaming
+                </li>
+                <li className="text-base text-on-surface-variant leading-relaxed">
+                  Led migration from on-premise warehouse to Snowflake for 3 internal teams
                 </li>
               </ul>
             </div>
 
-            <div
-              className="bevel-sunken p-6"
-              style={{ backgroundColor: '#111', padding: '1.5rem' }}
-            >
-              <div
-                className="flex flex-col sm:flex-row justify-between sm:items-baseline mb-4"
-                style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}
-              >
-                <h3
-                  style={{
-                    fontFamily: 'var(--font-pixel)',
-                    fontSize: '0.9rem',
-                    color: '#ffffff',
-                    margin: 0,
-                  }}
-                >
-                  Web Developer
-                </h3>
-                <span style={{ color: '#00ff00' }}>2019 &ndash; 2022</span>
-              </div>
-              <p className="mb-4" style={{ color: '#808080', marginBottom: '1rem' }}>
-                @ Globex Corporation / New York, NY
+            <div className="bg-surface-container-low rounded-sm p-8">
+              <h3 className="text-lg font-semibold text-on-surface">Data Engineer</h3>
+              <p className="text-sm text-on-surface-variant mb-4">
+                @ AnalyticsHub / Amsterdam, NL, 2020 &ndash; 2023
               </p>
-              <ul
-                className="list-disc pl-6 space-y-2"
-                style={{ paddingLeft: '1.5rem', listStyleType: 'disc' }}
-              >
-                <li style={{ marginBottom: '0.5rem' }}>
-                  Built interactive dashboards for internal analytics using React and D3.js.
+              <ul className="list-disc pl-6 space-y-2">
+                <li className="text-base text-on-surface-variant leading-relaxed">
+                  Built and maintained dbt transformation models across 15+ source systems
                 </li>
-                <li style={{ marginBottom: '0.5rem' }}>
-                  Optimized database queries and built RESTful APIs in Node.js/Express.
+                <li className="text-base text-on-surface-variant leading-relaxed">
+                  Developed Python ETL scripts integrated with REST APIs and PostgreSQL warehouses
                 </li>
-                <li style={{ marginBottom: '0.5rem' }}>
-                  Collaborated with design team to ensure pixel-perfect implementations.
+                <li className="text-base text-on-surface-variant leading-relaxed">
+                  Created self-service dashboards in Looker for business stakeholders
+                </li>
+                <li className="text-base text-on-surface-variant leading-relaxed">
+                  Implemented data quality checks using Great Expectations
                 </li>
               </ul>
             </div>
 
-            <div
-              className="bevel-sunken p-6"
-              style={{ backgroundColor: '#111', padding: '1.5rem' }}
-            >
-              <div
-                className="flex flex-col sm:flex-row justify-between sm:items-baseline mb-4"
-                style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}
-              >
-                <h3
-                  style={{
-                    fontFamily: 'var(--font-pixel)',
-                    fontSize: '0.9rem',
-                    color: '#ffffff',
-                    margin: 0,
-                  }}
-                >
-                  Junior Developer
-                </h3>
-                <span style={{ color: '#00ff00' }}>2017 &ndash; 2019</span>
-              </div>
-              <p className="mb-4" style={{ color: '#808080', marginBottom: '1rem' }}>
-                @ Initech / Austin, TX
+            <div className="bg-surface-container-low rounded-sm p-8">
+              <h3 className="text-lg font-semibold text-on-surface">Junior Data Analyst</h3>
+              <p className="text-sm text-on-surface-variant mb-4">
+                @ DataCore / Athens, GR, 2018 &ndash; 2020
               </p>
-              <ul
-                className="list-disc pl-6 space-y-2"
-                style={{ paddingLeft: '1.5rem', listStyleType: 'disc' }}
-              >
-                <li style={{ marginBottom: '0.5rem' }}>
-                  Maintained and patched legacy PHP systems, improving uptime by 15%.
+              <ul className="list-disc pl-6 space-y-2">
+                <li className="text-base text-on-surface-variant leading-relaxed">
+                  Wrote complex SQL queries for financial reporting and ad-hoc analysis
                 </li>
-                <li style={{ marginBottom: '0.5rem' }}>
-                  Created automated scripts to handle daily data backups and exports.
+                <li className="text-base text-on-surface-variant leading-relaxed">
+                  Built Python automation scripts to replace manual Excel processes
+                </li>
+                <li className="text-base text-on-surface-variant leading-relaxed">
+                  Maintained data quality checks and documented data lineage
                 </li>
               </ul>
             </div>
@@ -182,84 +87,38 @@ export default function ResumePage() {
         </section>
 
         <section>
-          <h2
-            style={{
-              fontFamily: 'var(--font-pixel)',
-              fontSize: '1rem',
-              color: '#ff00ff',
-              marginBottom: '1.5rem',
-            }}
-            className="neon-glow-pink"
-          >
-            &gt; SKILLS_&amp;_TECHNOLOGIES
-          </h2>
-          <div
-            className="bevel-raised p-6"
-            style={{ backgroundColor: '#1a1a1a', padding: '1.5rem' }}
-          >
-            <div
-              className="flex flex-wrap gap-3"
-              style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}
-            >
-              {[
-                'JavaScript (ES6+)',
-                'TypeScript',
-                'React',
-                'Next.js',
-                'Node.js',
-                'Tailwind CSS',
-                'GraphQL',
-                'PostgreSQL',
-                'Docker',
-                'Git / CI/CD',
-                'Jest / Cypress',
-              ].map((skill) => (
-                <span
-                  key={skill}
-                  className="bevel-sunken px-3 py-1"
-                  style={{
-                    backgroundColor: '#0a0a0a',
-                    color: '#c0c0c0',
-                    fontSize: '1rem',
-                    padding: '0.25rem 0.75rem',
-                  }}
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
+          <h2 className="text-2xl font-semibold text-on-surface mb-6">Skills &amp; Technologies</h2>
+          <div className="flex flex-wrap gap-3">
+            {[
+              'Python',
+              'SQL',
+              'Apache Spark',
+              'Apache Airflow',
+              'dbt',
+              'BigQuery',
+              'Snowflake',
+              'Kafka',
+              'PostgreSQL',
+              'Docker',
+              'Git / CI/CD',
+            ].map((skill) => (
+              <span
+                key={skill}
+                className="bg-surface-container-low text-on-surface px-3 py-1 rounded-full text-sm"
+              >
+                {skill}
+              </span>
+            ))}
           </div>
         </section>
 
         <section>
-          <h2
-            style={{
-              fontFamily: 'var(--font-pixel)',
-              fontSize: '1rem',
-              color: '#ffff00',
-              marginBottom: '1.5rem',
-            }}
-          >
-            &gt; EDUCATION
-          </h2>
-          <div className="bevel-sunken p-6" style={{ backgroundColor: '#111', padding: '1.5rem' }}>
-            <div
-              className="flex flex-col sm:flex-row justify-between sm:items-baseline mb-2"
-              style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}
-            >
-              <h3
-                style={{
-                  fontFamily: 'var(--font-pixel)',
-                  fontSize: '0.9rem',
-                  color: '#ffffff',
-                  margin: 0,
-                }}
-              >
-                B.S. Computer Science
-              </h3>
-              <span style={{ color: '#00ff00' }}>2013 &ndash; 2017</span>
-            </div>
-            <p style={{ color: '#808080', margin: 0 }}>University of Technology</p>
+          <h2 className="text-2xl font-semibold text-on-surface mb-6">Education</h2>
+          <div className="bg-surface-container-low rounded-sm p-8">
+            <h3 className="text-lg font-semibold text-on-surface">B.S. Computer Science</h3>
+            <p className="text-sm text-on-surface-variant">
+              University of Technology, 2014 &ndash; 2018
+            </p>
           </div>
         </section>
       </div>
