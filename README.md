@@ -1,6 +1,6 @@
 # pavanastasiadis.dev
 
-A retro 90s developer portfolio featuring CRT scanlines, neon glows, and pixel-perfect terminal aesthetics.
+A personal portfolio site with an Editorial Minimalism aesthetic for a Senior Data Engineer.
 
 ## Tech Stack
 
@@ -15,10 +15,10 @@ A retro 90s developer portfolio featuring CRT scanlines, neon glows, and pixel-p
 ## Features
 
 - 5 core pages: `/` (About), `/projects`, `/blog`, `/resume`, `/contact`
-- MDX blog with syntax highlighting and automatic RSS feed generation at `/rss.xml`
-- Interactive project demos at `/projects/[slug]/demo`
-- Retro CRT aesthetic with scanlines, vignette, and neon effects via Tailwind v4
-- Win95-style beveled UI components
+- MDX blog with syntax highlighting and automatic RSS feed generation at `/rss.xml` (currently empty)
+- 1 interactive project demo at `/projects/[slug]/demo`
+- Clean Editorial Minimalism styling with warm off-white surfaces and muted blue accents
+- Data engineer-focused content and case studies
 - Strict ESLint and Prettier configuration with Husky git hooks
 
 ## Getting Started
@@ -62,7 +62,7 @@ pnpm build
 ## Project Structure
 
 - `app/`: Next.js App Router pages and global styles
-- `components/`: React components (retro UI primitives)
+- `components/`: React components for the editorial UI
 - `content/`: Static content
   - `blog/`: MDX files for blog posts
   - `projects.ts`: Project metadata and definitions
@@ -89,6 +89,8 @@ Your content here...
 
 The site uses `remark-frontmatter` and `remark-mdx-frontmatter` to process this metadata.
 
+At the moment, the blog is empty and ready for future posts.
+
 ### Projects
 
 Edit `content/projects.ts` and add a new project object to the `projects` array:
@@ -103,6 +105,8 @@ Edit `content/projects.ts` and add a new project object to the `projects` array:
   repo: 'https://github.com/pav-anastasiadis/my-project',
 }
 ```
+
+The portfolio currently highlights a single interactive project demo.
 
 ## Deployment
 
