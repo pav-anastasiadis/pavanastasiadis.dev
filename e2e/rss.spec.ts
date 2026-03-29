@@ -27,37 +27,15 @@ test.describe('RSS Feed', () => {
     expect(text).toContain('</rss>');
   });
 
-  test('RSS feed contains blog post items', async ({ page }) => {
-    const response = await page.request.get('/rss.xml');
-    const text = await response.text();
-    expect(text).toContain('<item>');
-    expect(text).toContain('</item>');
-  });
-
-  test('RSS feed contains hello-world post', async ({ page }) => {
-    const response = await page.request.get('/rss.xml');
-    const text = await response.text();
-    expect(text).toContain('Hello World');
-    expect(text).toContain('/blog/hello-world');
-  });
-
-  test('RSS feed contains building-retro-web post', async ({ page }) => {
-    const response = await page.request.get('/rss.xml');
-    const text = await response.text();
-    expect(text).toContain('Building Retro Web Aesthetics');
-    expect(text).toContain('/blog/building-retro-web');
-  });
-
-  test('RSS feed contains typescript-tips post', async ({ page }) => {
-    const response = await page.request.get('/rss.xml');
-    const text = await response.text();
-    expect(text).toContain('TypeScript Tips That Actually Matter');
-    expect(text).toContain('/blog/typescript-tips');
-  });
-
   test('RSS feed channel has title', async ({ page }) => {
     const response = await page.request.get('/rss.xml');
     const text = await response.text();
     expect(text).toContain('<title>Pav Anastasiadis Blog</title>');
+  });
+
+  test('RSS feed has no items (0 blog posts)', async ({ page }) => {
+    const response = await page.request.get('/rss.xml');
+    const text = await response.text();
+    expect(text).not.toContain('<item>');
   });
 });

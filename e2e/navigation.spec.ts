@@ -69,16 +69,6 @@ test.describe('Navigation', () => {
       await expect(page.locator('[data-testid="footer"]')).toBeVisible();
     });
 
-    test('hit-counter is visible on homepage', async ({ page }) => {
-      await page.goto('/');
-      await expect(page.locator('[data-testid="hit-counter"]')).toBeVisible();
-    });
-
-    test('under-construction banner is visible on homepage', async ({ page }) => {
-      await page.goto('/');
-      await expect(page.locator('[data-testid="under-construction"]')).toBeVisible();
-    });
-
     test('footer is visible on every page', async ({ page }) => {
       for (const route of ['/projects', '/blog', '/resume', '/contact']) {
         await page.goto(route);

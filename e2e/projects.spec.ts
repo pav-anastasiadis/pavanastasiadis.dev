@@ -7,10 +7,10 @@ test.describe('Projects', () => {
       await expect(page.locator('[data-testid="projects-grid"]')).toBeVisible();
     });
 
-    test('shows 3 project cards', async ({ page }) => {
+    test('shows 1 project card', async ({ page }) => {
       await page.goto('/projects');
       const cards = page.locator('[data-testid="project-card"]');
-      await expect(cards).toHaveCount(3);
+      await expect(cards).toHaveCount(1);
     });
 
     test('project cards are clickable links to detail pages', async ({ page }) => {
@@ -42,25 +42,6 @@ test.describe('Projects', () => {
       await expect(demoLink).toBeVisible();
       await expect(demoLink).toHaveAttribute('href', '/projects/pixel-canvas/demo');
     });
-
-    test('retro-terminal detail shows title', async ({ page }) => {
-      await page.goto('/projects/retro-terminal');
-      const title = page.locator('[data-testid="project-title"]');
-      await expect(title).toBeVisible();
-      await expect(title).toContainText('Retro Terminal');
-    });
-
-    test('retro-terminal detail has no demo-link (demoAvailable: false)', async ({ page }) => {
-      await page.goto('/projects/retro-terminal');
-      await expect(page.locator('[data-testid="demo-link"]')).toHaveCount(0);
-    });
-
-    test('neon-clock detail shows title', async ({ page }) => {
-      await page.goto('/projects/neon-clock');
-      const title = page.locator('[data-testid="project-title"]');
-      await expect(title).toBeVisible();
-      await expect(title).toContainText('Neon Clock');
-    });
   });
 
   test.describe('Demo page', () => {
@@ -73,11 +54,6 @@ test.describe('Projects', () => {
       await page.goto('/projects/pixel-canvas/demo');
       await page.waitForSelector('[data-testid="demo-interactive"]', { timeout: 10000 });
       await expect(page.locator('[data-testid="demo-interactive"]')).toBeVisible();
-    });
-
-    test('retro-terminal demo page returns 404 (no demo available)', async ({ page }) => {
-      const response = await page.goto('/projects/retro-terminal/demo');
-      expect(response?.status()).toBe(404);
     });
   });
 });

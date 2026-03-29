@@ -7,34 +7,34 @@ test.describe('Resume', () => {
       await expect(page.locator('[data-testid="resume-content"]')).toBeVisible();
     });
 
-    test('resume page shows RESUME.EXE heading', async ({ page }) => {
+    test('resume page shows Resume heading', async ({ page }) => {
       await page.goto('/resume');
-      await expect(page.locator('text=RESUME.EXE')).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Resume', exact: true })).toBeVisible();
     });
 
-    test('resume page shows work history section', async ({ page }) => {
+    test('resume page shows Experience section', async ({ page }) => {
       await page.goto('/resume');
-      await expect(page.locator('text=WORK_HISTORY')).toBeVisible();
+      await expect(page.locator('text=Experience')).toBeVisible();
     });
 
-    test('resume page shows Senior Frontend Engineer job', async ({ page }) => {
+    test('resume page shows Senior Data Engineer job', async ({ page }) => {
       await page.goto('/resume');
-      await expect(page.locator('text=Senior Frontend Engineer')).toBeVisible();
+      await expect(page.locator('text=Senior Data Engineer')).toBeVisible();
     });
 
-    test('resume page shows skills section', async ({ page }) => {
+    test('resume page shows Skills & Technologies section', async ({ page }) => {
       await page.goto('/resume');
-      await expect(page.locator('text=SKILLS_&_TECHNOLOGIES')).toBeVisible();
+      await expect(page.locator('text=Skills')).toBeVisible();
     });
 
-    test('resume page shows TypeScript skill', async ({ page }) => {
+    test('resume page shows Python skill', async ({ page }) => {
       await page.goto('/resume');
-      await expect(page.locator('text=TypeScript')).toBeVisible();
+      await expect(page.getByText('Python', { exact: true }).first()).toBeVisible();
     });
 
-    test('resume page shows education section', async ({ page }) => {
+    test('resume page shows Education section', async ({ page }) => {
       await page.goto('/resume');
-      await expect(page.locator('text=EDUCATION')).toBeVisible();
+      await expect(page.locator('text=Education')).toBeVisible();
     });
   });
 

@@ -61,14 +61,9 @@ test.describe('Contact', () => {
   });
 
   test.describe('Contact page content', () => {
-    test('contact page shows CONTACT heading', async ({ page }) => {
+    test('contact page shows Contact heading', async ({ page }) => {
       await page.goto('/contact');
-      await expect(page.getByRole('heading', { name: 'CONTACT' })).toBeVisible();
-    });
-
-    test('contact page shows digital guestbook text', async ({ page }) => {
-      await page.goto('/contact');
-      await expect(page.locator('text=DIGITAL GUESTBOOK')).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Contact', exact: true })).toBeVisible();
     });
   });
 });
