@@ -222,7 +222,7 @@ Max Concurrent: 7 (Wave 3)
 
 ## TODOs
 
-- [ ] 1. Scaffold Project with Next.js, TypeScript, Tailwind v4, and DX Tooling
+- [x] 1. Scaffold Project with Next.js, TypeScript, Tailwind v4, and DX Tooling
 
   **What to do**:
   - Initialize the project with `pnpm create next-app@latest . --typescript --tailwind --eslint --app --src-dir=no --import-alias="@/*" --turbopack` (adjust flags as needed for latest Next.js — the goal is App Router + TypeScript + Tailwind)
@@ -356,7 +356,7 @@ Max Concurrent: 7 (Wave 3)
   - Files: `package.json`, `pnpm-lock.yaml`, `tsconfig.json`, `next.config.mjs`, `eslint.config.mjs`, `.prettierrc`, `.prettierignore`, `.husky/*`, `playwright.config.ts`, `app/layout.tsx`, `app/page.tsx`, `app/globals.css`, `e2e/smoke.spec.ts`, `.gitignore`
   - Pre-commit: `pnpm build && pnpm lint`
 
-- [ ] 2. Retro Theme System — Pixel Fonts, Neon Colors, CRT Effects
+- [x] 2. Retro Theme System — Pixel Fonts, Neon Colors, CRT Effects
 
   **What to do**:
   - Set up pixel fonts via `next/font/google` in `app/layout.tsx`:
@@ -464,7 +464,7 @@ Max Concurrent: 7 (Wave 3)
   - Files: `app/globals.css`, `app/layout.tsx`
   - Pre-commit: `pnpm build && pnpm lint`
 
-- [ ] 3. Root Layout with Retro Navigation Shell
+- [x] 3. Root Layout with Retro Navigation Shell
 
   **What to do**:
   - Create `components/Navigation.tsx`:
@@ -605,7 +605,7 @@ Max Concurrent: 7 (Wave 3)
   - Files: `components/Navigation.tsx`, `components/Footer.tsx`, `components/HitCounter.tsx`, `components/UnderConstruction.tsx`, `app/layout.tsx`
   - Pre-commit: `pnpm build && pnpm lint`
 
-- [ ] 4. MDX Blog Infrastructure with Syntax Highlighting
+- [x] 4. MDX Blog Infrastructure with Syntax Highlighting
 
   **What to do**:
   - Install MDX dependencies: `pnpm add @next/mdx @mdx-js/loader @mdx-js/react @types/mdx remark-frontmatter remark-mdx-frontmatter remark-gfm rehype-pretty-code shiki rehype-slug`
@@ -733,7 +733,7 @@ Max Concurrent: 7 (Wave 3)
   - Files: `next.config.mjs`, `mdx-components.tsx`, `lib/blog.ts`, `content/blog/hello-world.mdx`, `app/blog/page.tsx`, `app/blog/[slug]/page.tsx`
   - Pre-commit: `pnpm build && pnpm lint`
 
-- [ ] 5. Project Data Layer and Metadata Types
+- [x] 5. Project Data Layer and Metadata Types
 
   **What to do**:
   - Create `lib/projects.ts`:

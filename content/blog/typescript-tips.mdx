@@ -1,0 +1,131 @@
+---
+title: TypeScript Tips That Actually Matter
+date: '2025-12-01'
+tags: ['typescript', 'tips']
+description: Practical TypeScript patterns that improve your code without the ceremony
+---
+
+# TypeScript Tips That Actually Matter
+
+TypeScript gets a bad rap for being verbose. And sometimes it is. But the right patterns save you hours of debugging while keeping your code expressive. Here are the ones I keep reaching for.
+
+## 1. Use `satisfies` Instead of Explicit Type Annotations
+
+The `satisfies` operator validates a value against a type without widening it. This is huge for config objects:
+
+```typescript
+// Without satisfies — loses the literal types
+const palette = {
+  red: [255, 0, 0],
+  green: '#00ff00',
+} as const;
+
+// With satisfies — validates shape AND preserves literals
+type ColorValue = string | [number, number, number];
+
+const palette2 = {
+  red: [255, 0, 0],
+  green: '#00ff00',
+} satisfies Record<string, ColorValue>;
+
+// TypeScript knows red is [number, number, number], not ColorValue
+palette2.red.map((v) => v * 2); // ✅ works — .map() is available
+```
+
+## 2. Discriminated Unions Over Optional Fields
+
+Stop using optional fields to represent state. Use discriminated unions:
+
+```typescript
+// ❌ Bad — all fields are optional, anything could be undefined
+interface ApiState {
+  loading?: boolean;
+  data?: User[];
+  error?: string;
+}
+
+// ✅ Good — state is explicit, fields guaranteed per state
+type ApiState =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'success'; data: User[] }
+  | { status: 'error'; error: string };
+
+// TypeScript narrows correctly in switch/if
+function render(state: ApiState) {
+  switch (state.status) {
+    case 'success':
+      return state.data.map((u) => u.name); // data is guaranteed here
+    case 'error':
+      return state.error; // error is guaranteed here
+  }
+}
+```
+
+## 3. Template Literal Types for String Validation
+
+TypeScript's template literal types let you validate string shapes at compile time:
+
+```typescript
+type EventName = `on${Capitalize<string>}`;
+
+// ✅ These are valid
+const click: EventName = 'onClick';
+const change: EventName = 'onChange';
+
+// ❌ This fails at compile time
+const bad: EventName = 'click'; // Error: not prefixed with 'on'
+
+// Useful for CSS class name builders
+type Direction = 'top' | 'right' | 'bottom' | 'left';
+type SpacingClass = `m${Direction extends string ? '-' : never}${Direction}-${number}`;
+```
+
+## 4. `infer` in Conditional Types
+
+Extract types from generic containers without knowing the concrete type:
+
+```typescript
+// Extract the resolved type from a Promise
+type Awaited<T> = T extends Promise<infer R> ? R : T;
+
+// Extract array element type
+type ElementType<T> = T extends (infer E)[] ? E : never;
+
+// Extract function return type (similar to built-in ReturnType)
+type ReturnOf<T> = T extends (...args: unknown[]) => infer R ? R : never;
+
+// Usage
+type PostData = Awaited<ReturnType<typeof getAllPosts>>;
+```
+
+## 5. The `never` Type as an Exhaustiveness Check
+
+Use `never` to guarantee all union members are handled:
+
+```typescript
+type Shape = 'circle' | 'square' | 'triangle';
+
+function describeShape(shape: Shape): string {
+  switch (shape) {
+    case 'circle':
+      return 'Round';
+    case 'square':
+      return 'Boxy';
+    case 'triangle':
+      return 'Pointy';
+    default: {
+      const _exhaustive: never = shape;
+      throw new Error(`Unhandled shape: ${_exhaustive}`);
+    }
+  }
+}
+// If you add 'hexagon' to Shape and forget to handle it,
+// TypeScript will error on the `never` assignment.
+```
+
+## The Meta-Tip
+
+TypeScript's type system is a language within a language. The goal isn't to annotate everything — it's to express your program's _invariants_ so the compiler can catch violations before runtime.
+
+Write types that make illegal states unrepresentable. The rest follows.

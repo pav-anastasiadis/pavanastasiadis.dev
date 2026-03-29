@@ -1,6 +1,53 @@
 {
   "active_plan": "/home/pav/Work/pav-anastasiadis/pavanastasiadis.dev/.sisyphus/plans/portfolio-site.md",
   "started_at": "2026-03-29T08:26:53.630Z",
-  "session_ids": ["ses_2c9254c30ffew3j32b3qzIyLJy"],
-  "plan_name": "portfolio-site"
+  "session_ids": [
+    "ses_2c9254c30ffew3j32b3qzIyLJy",
+    "ses_2c7491d65ffepnVFn0geji2eRQ",
+    "ses_2c73db742ffexxhiW7zmWZp64H",
+    "ses_2c73c6111ffeUU185voAoPCpIa",
+    "ses_2c73ccd80ffe6E7ELhYothsQhu",
+    "ses_2c735c3d6ffeLtzWlbFVbrQf0t",
+    "ses_2c72f07d4ffevMyMEyYlTehFl1",
+    "ses_2c72fa093ffez5hKdoaoFnVslz"
+  ],
+  "plan_name": "portfolio-site",
+  "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "Scaffold Project with Next.js, TypeScript, Tailwind v4, and DX Tooling",
+      "session_id": "ses_2c7491d65ffepnVFn0geji2eRQ",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-03-29T08:40:08.285Z"
+    },
+    "todo:2": {
+      "task_key": "todo:2",
+      "task_label": "2",
+      "task_title": "Retro Theme System — Pixel Fonts, Neon Colors, CRT Effects",
+      "session_id": "ses_2c73db742ffexxhiW7zmWZp64H",
+      "agent": "Sisyphus-Junior",
+      "category": "visual-engineering",
+      "updated_at": "2026-03-29T08:44:20.862Z"
+    },
+    "todo:3": {
+      "task_key": "todo:3",
+      "task_label": "3",
+      "task_title": "Root Layout with Retro Navigation Shell",
+      "session_id": "ses_2c735c3d6ffeLtzWlbFVbrQf0t",
+      "agent": "Sisyphus-Junior",
+      "category": "visual-engineering",
+      "updated_at": "2026-03-29T08:54:45.081Z"
+    },
+    "todo:6": {
+      "task_key": "todo:6",
+      "task_label": "6",
+      "task_title": "Landing/About Page",
+      "session_id": "ses_2c72fa093ffez5hKdoaoFnVslz",
+      "agent": "Sisyphus-Junior",
+      "category": "visual-engineering",
+      "updated_at": "2026-03-29T09:00:15.275Z"
+    }
+  }
 }
