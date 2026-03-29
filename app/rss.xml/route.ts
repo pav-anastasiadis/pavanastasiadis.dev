@@ -38,7 +38,7 @@ export async function GET() {
   <channel>
     <title>Pav Anastasiadis Blog</title>
     <link>${baseUrl}</link>
-    <description>Pav Anastasiadis's retro developer blog</description>
+    <description>Pav Anastasiadis's blog</description>
     <language>en</language>${items}
   </channel>
 </rss>`;

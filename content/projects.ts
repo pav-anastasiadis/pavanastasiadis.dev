@@ -10,23 +10,4 @@ export const projects: ProjectMeta[] = [
     demoAvailable: true,
     repo: 'https://github.com/pav-anastasiadis/pixel-canvas',
   },
-  {
-    slug: 'retro-terminal',
-    title: 'Retro Terminal',
-    description:
-      'A command-line interface simulator with retro terminal aesthetics and basic Unix-style commands.',
-    tags: ['cli', 'typescript', 'react'],
-    demoAvailable: false,
-    repo: 'https://github.com/pav-anastasiadis/retro-terminal',
-  },
-  {
-    slug: 'neon-clock',
-    title: 'Neon Clock',
-    description:
-      'A real-time digital clock with neon LED styling, built with CSS animations and SVG.',
-    tags: ['css', 'animation', 'svg'],
-    demoAvailable: false,
-    url: 'https://neon-clock.vercel.app',
-    repo: 'https://github.com/pav-anastasiadis/neon-clock',
-  },
 ];
