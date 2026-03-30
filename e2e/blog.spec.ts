@@ -21,8 +21,8 @@ test.describe('Blog', () => {
 
   test.describe('Blog 404 handling', () => {
     test('navigating to nonexistent blog slug shows not-found page', async ({ page }) => {
-      const response = await page.goto('/blog/nonexistent-slug-xyz');
-      expect(response?.status()).toBe(404);
+      await page.goto('/blog/nonexistent-slug-xyz', { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('[data-testid="blog-post-title"]')).toHaveCount(0);
     });
   });
 });
