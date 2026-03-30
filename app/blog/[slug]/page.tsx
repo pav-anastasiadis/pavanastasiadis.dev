@@ -17,6 +17,10 @@ export async function generateStaticParams() {
   const blogDir = path.join(process.cwd(), 'content', 'blog');
   if (!fs.existsSync(blogDir)) return [];
   const files = fs.readdirSync(blogDir).filter((f) => f.endsWith('.mdx'));
+  if (files.length === 0) {
+    return [{ slug: '__no-posts__' }];
+  }
+
   return files.map((f) => ({ slug: f.replace(/\.mdx$/, '') }));
 }
 
