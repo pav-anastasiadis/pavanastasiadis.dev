@@ -10,6 +10,7 @@ A personal portfolio site with an Editorial Minimalism aesthetic for a Senior Da
 - **Content**: [MDX](https://mdxjs.com/) with YAML frontmatter
 - **Syntax Highlighting**: [rehype-pretty-code](https://github.com/rehype-pretty-code/rehype-pretty-code) + [Shiki](https://shiki.style/)
 - **Testing**: [Playwright](https://playwright.dev/) (E2E)
+- **Deployment**: Docker + nginx
 
 ## Features
 
@@ -51,7 +52,7 @@ pnpm build
 
 ### Other Scripts
 
-- `pnpm start`: Run the production build locally
+- `pnpm start`: Run the production build locally (note: with `output: 'export'`, use Docker for production serving)
 - `pnpm lint`: Run ESLint check
 - `pnpm lint:fix`: Run ESLint and apply fixes
 - `pnpm format`: Run Prettier and apply fixes
@@ -106,3 +107,22 @@ Edit `content/projects.ts` and add a new project object to the `projects` array:
 ```
 
 The portfolio currently highlights a single interactive project demo.
+
+## Deployment
+
+This project exports as a static site and is served via nginx in Docker.
+
+### Build and Run
+
+```bash
+docker build -t pavanastasiadis-dev .
+docker run -p 8080:80 pavanastasiadis-dev
+```
+
+Open [http://localhost:8080](http://localhost:8080) to see the site.
+
+### Production Notes
+
+- The site is statically exported at build time (`pnpm build` produces `out/`)
+- nginx serves the static files with gzip compression and security headers
+- `pnpm start` (`next start`) is not used — the Docker container handles serving
