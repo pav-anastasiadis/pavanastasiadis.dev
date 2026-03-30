@@ -1,30 +1,38 @@
 
-> pavanastasiadis.dev@0.1.0 build /home/pav/Work/pav-anastasiadis/pavanastasiadis.dev
-> next build
+> pavanastasiadis.dev@0.1.0 build /home/pav.linux/Work/pavanastasiadis.dev
+> next build --webpack
 
-▲ Next.js 16.2.1 (Turbopack)
+▲ Next.js 16.2.1 (webpack)
 
   Creating an optimized production build ...
-✓ Compiled successfully in 2.6s
+✓ Compiled successfully in 2.6min
   Running TypeScript ...
-  Finished TypeScript in 2.3s ...
-  Collecting page data using 5 workers ...
-  Generating static pages using 5 workers (0/4) ...
-  Generating static pages using 5 workers (1/4) 
-  Generating static pages using 5 workers (2/4) 
-  Generating static pages using 5 workers (3/4) 
-✓ Generating static pages using 5 workers (4/4) in 461ms
+  Finished TypeScript in 9.6s ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/11) ...
+  Generating static pages using 1 worker (2/11) 
+  Generating static pages using 1 worker (5/11) 
+  Generating static pages using 1 worker (8/11) 
+✓ Generating static pages using 1 worker (11/11) in 870ms
   Finalizing page optimization ...
+  Collecting build traces ...
 
 Route (app)
 ┌ ○ /
-└ ○ /_not-found
+├ ○ /_not-found
+├ ƒ /blog
+├ ● /blog/[slug]
+├ ○ /contact
+├ ○ /projects
+├ ● /projects/[slug]
+│ └ /projects/pixel-canvas
+├ ● /projects/[slug]/demo
+│ └ /projects/pixel-canvas/demo
+├ ○ /resume
+└ ○ /rss.xml
 
 
-○  (Static)  prerendered as static content
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
 
-
-> pavanastasiadis.dev@0.1.0 lint /home/pav/Work/pav-anastasiadis/pavanastasiadis.dev
-> eslint .
-
-EXIT CODE: 0

@@ -10,7 +10,6 @@ A personal portfolio site with an Editorial Minimalism aesthetic for a Senior Da
 - **Content**: [MDX](https://mdxjs.com/) with YAML frontmatter
 - **Syntax Highlighting**: [rehype-pretty-code](https://github.com/rehype-pretty-code/rehype-pretty-code) + [Shiki](https://shiki.style/)
 - **Testing**: [Playwright](https://playwright.dev/) (E2E)
-- **Deployment**: [Vercel](https://vercel.com/)
 
 ## Features
 
@@ -107,7 +106,3 @@ Edit `content/projects.ts` and add a new project object to the `projects` array:
 ```
 
 The portfolio currently highlights a single interactive project demo.
-
-## Deployment
-
-This project is optimized for deployment on Vercel. Connect your repository to Vercel and it will automatically detect the Next.js setup. Ensure the build command is set to `pnpm build`.
