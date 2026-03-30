@@ -1,0 +1,1 @@
+-rw-rw-r-- 1 pav pav 0 Mar 30 23:21 content/blog/.gitkeep
