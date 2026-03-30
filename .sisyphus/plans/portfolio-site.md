@@ -811,7 +811,7 @@ Max Concurrent: 7 (Wave 3)
   - Files: `lib/projects.ts`, `content/projects.ts`
   - Pre-commit: `pnpm build && pnpm lint`
 
-- [ ] 6. Landing/About Page
+- [x] 6. Landing/About Page
 
   **What to do**:
   - Build `app/page.tsx` — the homepage at `/`:
@@ -893,7 +893,7 @@ Max Concurrent: 7 (Wave 3)
   - Files: `app/page.tsx`
   - Pre-commit: `pnpm build && pnpm lint`
 
-- [ ] 7. Blog Seed Content and Tag Filtering
+- [x] 7. Blog Seed Content and Tag Filtering
 
   **What to do**:
   - Create 2 additional seed MDX blog posts in `content/blog/` (Task 4 already created 1):
@@ -995,7 +995,7 @@ Max Concurrent: 7 (Wave 3)
   - Files: `content/blog/building-retro-web.mdx`, `content/blog/typescript-tips.mdx`, `app/blog/page.tsx`
   - Pre-commit: `pnpm build && pnpm lint`
 
-- [ ] 8. RSS Feed Route Handler
+- [x] 8. RSS Feed Route Handler
 
   **What to do**:
   - Create `app/rss.xml/route.ts`:
@@ -1082,7 +1082,7 @@ Max Concurrent: 7 (Wave 3)
   - Files: `app/rss.xml/route.ts`, `app/layout.tsx` (metadata update)
   - Pre-commit: `pnpm build && pnpm lint`
 
-- [ ] 9. Projects Grid and Detail Pages
+- [x] 9. Projects Grid and Detail Pages
 
   **What to do**:
   - Build `app/projects/page.tsx` — Projects grid at `/projects`:
@@ -1184,7 +1184,7 @@ Max Concurrent: 7 (Wave 3)
   - Files: `app/projects/page.tsx`, `app/projects/[slug]/page.tsx`
   - Pre-commit: `pnpm build && pnpm lint`
 
-- [ ] 10. Interactive Demo Infrastructure and Seed Demo
+- [x] 10. Interactive Demo Infrastructure and Seed Demo
 
   **What to do**:
   - Build `app/projects/[slug]/demo/page.tsx` — Demo mount point:
@@ -1300,7 +1300,7 @@ Max Concurrent: 7 (Wave 3)
   - Files: `app/projects/[slug]/demo/page.tsx`, `components/demos/{name}.tsx`
   - Pre-commit: `pnpm build && pnpm lint`
 
-- [ ] 11. Resume Page with PDF Download
+- [x] 11. Resume Page with PDF Download
 
   **What to do**:
   - Build `app/resume/page.tsx` — Resume/work history at `/resume`:
@@ -1385,7 +1385,7 @@ Max Concurrent: 7 (Wave 3)
   - Files: `app/resume/page.tsx`, `public/resume.pdf`
   - Pre-commit: `pnpm build && pnpm lint`
 
-- [ ] 12. Contact Page with Social Links
+- [x] 12. Contact Page with Social Links
 
   **What to do**:
   - Build `app/contact/page.tsx` — Contact/socials at `/contact`:
@@ -1468,7 +1468,7 @@ Max Concurrent: 7 (Wave 3)
   - Files: `app/contact/page.tsx`
   - Pre-commit: `pnpm build && pnpm lint`
 
-- [ ] 13. Playwright E2E Test Suite
+- [x] 13. Playwright E2E Test Suite
 
   **What to do**:
   - Create comprehensive E2E tests in `e2e/` directory. Remove or update the smoke test from Task 1.
@@ -1580,7 +1580,7 @@ Max Concurrent: 7 (Wave 3)
   - Files: `e2e/navigation.spec.ts`, `e2e/blog.spec.ts`, `e2e/projects.spec.ts`, `e2e/resume.spec.ts`, `e2e/contact.spec.ts`, `e2e/rss.spec.ts`, `e2e/mobile.spec.ts`
   - Pre-commit: `pnpm build && pnpm lint`
 
-- [ ] 14. README and Deployment Preparation
+- [x] 14. README and Deployment Preparation
 
   **What to do**:
   - Create `README.md` at project root:

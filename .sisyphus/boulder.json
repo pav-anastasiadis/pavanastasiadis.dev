@@ -1,53 +1,96 @@
 {
-  "active_plan": "/home/pav/Work/pav-anastasiadis/pavanastasiadis.dev/.sisyphus/plans/portfolio-site.md",
-  "started_at": "2026-03-29T08:26:53.630Z",
+  "active_plan": "/home/pav/Work/pav-anastasiadis/pavanastasiadis.dev/.sisyphus/plans/editorial-redesign.md",
+  "started_at": "2026-03-29T20:46:33.898Z",
   "session_ids": [
     "ses_2c9254c30ffew3j32b3qzIyLJy",
-    "ses_2c7491d65ffepnVFn0geji2eRQ",
-    "ses_2c73db742ffexxhiW7zmWZp64H",
-    "ses_2c73c6111ffeUU185voAoPCpIa",
-    "ses_2c73ccd80ffe6E7ELhYothsQhu",
-    "ses_2c735c3d6ffeLtzWlbFVbrQf0t",
-    "ses_2c72f07d4ffevMyMEyYlTehFl1",
-    "ses_2c72fa093ffez5hKdoaoFnVslz"
+    "ses_2c4a4f724ffecm8Bh8AvJKrWI7",
+    "ses_2c4a184c7ffeOnBjrEriBkSy49",
+    "ses_2c49d3417ffeGfUo1Tbgs3f0qK",
+    "ses_2c49ad947ffeCiepXZSAtG74o3",
+    "ses_2c498bba3ffe6UDg0sh02ywEKS",
+    "ses_2c4935eacffeG2EeHomzvuPz6d",
+    "ses_2c48f2da4ffeXGH3Z3PJ4AiOPs",
+    "ses_2c48ecdbffferXHwkD6gfvMgvK",
+    "ses_2c48aa410ffeZW59EtQ0gOcKYQ",
+    "ses_2c482bf35ffe4KQ1Jp5bCPHKbU",
+    "ses_2c47e90f2ffenqFzeyRZdUOj2C",
+    "ses_2c47dfd22ffeMdDuQnQ6oXpuJd",
+    "ses_2c47ecf90ffeDUe11elapm454i",
+    "ses_2c47e4e41ffeuTHLzUJO1JOf64",
+    "ses_2c478d7fcffeJ33sAl2Xlmabla"
   ],
-  "plan_name": "portfolio-site",
+  "plan_name": "editorial-redesign",
   "task_sessions": {
     "todo:1": {
       "task_key": "todo:1",
       "task_label": "1",
-      "task_title": "Scaffold Project with Next.js, TypeScript, Tailwind v4, and DX Tooling",
-      "session_id": "ses_2c7491d65ffepnVFn0geji2eRQ",
+      "task_title": "Design Tokens + globals.css Complete Rewrite",
+      "session_id": "ses_2c4a4f724ffecm8Bh8AvJKrWI7",
       "agent": "Sisyphus-Junior",
-      "category": "deep",
-      "updated_at": "2026-03-29T08:40:08.285Z"
+      "category": "visual-engineering",
+      "updated_at": "2026-03-29T20:50:39.649Z"
     },
     "todo:2": {
       "task_key": "todo:2",
       "task_label": "2",
-      "task_title": "Retro Theme System — Pixel Fonts, Neon Colors, CRT Effects",
-      "session_id": "ses_2c73db742ffexxhiW7zmWZp64H",
+      "task_title": "Root Layout + Navigation + Footer Rewrite",
+      "session_id": "ses_2c4a184c7ffeOnBjrEriBkSy49",
       "agent": "Sisyphus-Junior",
       "category": "visual-engineering",
-      "updated_at": "2026-03-29T08:44:20.862Z"
+      "updated_at": "2026-03-29T20:55:14.543Z"
     },
     "todo:3": {
       "task_key": "todo:3",
       "task_label": "3",
-      "task_title": "Root Layout with Retro Navigation Shell",
-      "session_id": "ses_2c735c3d6ffeLtzWlbFVbrQf0t",
+      "task_title": "Homepage Redesign + TimezoneClock Component",
+      "session_id": "ses_2c49d3417ffeGfUo1Tbgs3f0qK",
       "agent": "Sisyphus-Junior",
       "category": "visual-engineering",
-      "updated_at": "2026-03-29T08:54:45.081Z"
+      "updated_at": "2026-03-29T20:58:47.139Z"
     },
-    "todo:6": {
-      "task_key": "todo:6",
-      "task_label": "6",
-      "task_title": "Landing/About Page",
-      "session_id": "ses_2c72fa093ffez5hKdoaoFnVslz",
+    "todo:4": {
+      "task_key": "todo:4",
+      "task_label": "4",
+      "task_title": "Content Cleanup — Delete Blog Posts, Trim Projects, Update RSS Metadata",
+      "session_id": "ses_2c49ad947ffeCiepXZSAtG74o3",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-03-29T21:00:43.628Z"
+    },
+    "todo:5": {
+      "task_key": "todo:5",
+      "task_label": "5",
+      "task_title": "Blog Pages Redesign (Listing + Post Detail)",
+      "session_id": "ses_2c4935eacffeG2EeHomzvuPz6d",
       "agent": "Sisyphus-Junior",
       "category": "visual-engineering",
-      "updated_at": "2026-03-29T09:00:15.275Z"
+      "updated_at": "2026-03-29T21:10:29.878Z"
+    },
+    "todo:7": {
+      "task_key": "todo:7",
+      "task_label": "7",
+      "task_title": "Resume Page Redesign + Data Engineer Content",
+      "session_id": "ses_2c48f2da4ffeXGH3Z3PJ4AiOPs",
+      "agent": "Sisyphus-Junior",
+      "category": "visual-engineering",
+      "updated_at": "2026-03-29T21:14:55.890Z"
+    },
+    "todo:9": {
+      "task_key": "todo:9",
+      "task_label": "9",
+      "task_title": "E2E Test Rewrite — All 7 Spec Files",
+      "session_id": "ses_2c482bf35ffe4KQ1Jp5bCPHKbU",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-03-29T21:28:33.418Z"
+    },
+    "final-wave:f1": {
+      "task_key": "final-wave:f1",
+      "task_label": "F1",
+      "task_title": "**Plan Compliance Audit** — `oracle`",
+      "session_id": "ses_2c478d7fcffeJ33sAl2Xlmabla",
+      "agent": "oracle",
+      "updated_at": "2026-03-29T21:38:12.594Z"
     }
   }
 }

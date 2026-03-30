@@ -80,3 +80,52 @@
 - `app/layout.tsx` already includes `alternates.types['application/rss+xml']`, so no metadata change was needed
 - `pnpm build` succeeded after adding the route; TypeScript LSP diagnostics could not run because `typescript-language-server` is not installed in this environment
 - **Tailwind v4 Setup:** Direct mapping of custom CSS properties (`@theme` variables) doesn't always automatically generate utilities like `text-retro-silver`. Sometimes using inline styles with CSS variables mapping `var(--color-neon-pink, #ff00ff)` is a safer fallback for explicit coloring when unsure of the Tailwind v4 utility name generation rule for custom `-` colors.
+
+## [Task 9] Project CRT Duplication Fix
+
+- `/projects` and `/projects/[slug]` should not include `.scanlines` or `.crt-vignette` on their inner `<main>` elements when those effects already exist in `app/layout.tsx`.
+- `pnpm build` passes after removing the duplicate classes.
+
+## [Task 7] Blog Listing with Tag Filtering
+
+- `/blog` page is `ƒ (Dynamic)` — correct, because it uses `searchParams` (Promise) which prevents static pre-rendering
+- Next.js 16 App Router: `searchParams` is `Promise<{tag?: string}>` — must `await searchParams` in server components
+- Tag filtering is fully server-side: read `?tag=xxx` from awaited searchParams, filter with `getAllPosts()` from `lib/blog.ts`
+- `getAllTags()` returns sorted unique tags across all posts — use for rendering tag pill filters
+- `.bevel-raised` CSS class available from globals.css for Win95-style card borders
+- Stale `.next/lock` file can cause "Another next build process is already running" — delete it before retrying
+- If `.next/` directory has stale artifacts from interrupted builds, `rm -rf .next` before clean rebuild
+- MDX frontmatter format (no quotes around string values works, but quotes are safer): `title: 'My Title'`
+
+### Next.js Dynamic Imports and Server Components
+
+- **Issue**: Attempting to use `next/dynamic` with `ssr: false` directly in a Server Component throws an error (`ssr: false is not allowed with next/dynamic in Server Components`).
+- **Solution**: Create a Client Component wrapper (like `DemoLoader.tsx`) that performs the dynamic import with `ssr: false`. The Server Component (`app/projects/[slug]/demo/page.tsx`) then renders this Client Component, passing any needed props (like `slug`).
+- **Pattern**: When using Next.js 16 App Router, `generateStaticParams` makes a route a Server Component. If that page needs to dynamically load a client-only module (like a canvas app), you must bridge it through a separate Client Component loader.
+
+- Replaced boilerplate README.md with retro-specific content.
+- Updated .gitignore with testing and sisyphus directories.
+- Verified Next.js build using --webpack flag is functional.
+- Tailwind v4 theme tokens found in globals.css for font-pixel and font-terminal.
+
+## [Task 10] E2E Test Suite Findings
+
+- **playwright.config.ts webServer command**: Must use `pnpm dev --webpack` not `pnpm dev` — Next.js 16 uses Turbopack by default for `next dev`, which fails to serialize MDX loader options. Matching build with `--webpack` flag required for both build and dev server.
+- **webServer timeout**: Added `timeout: 120000` to give webpack dev mode enough startup time.
+- **Strict mode in Playwright**: `toBeVisible()` will throw if a locator matches >1 element — always use `.first()` or a more specific selector when multiple elements share the same testid/text (e.g., `active-tag` with `#css` appears in both the tag bar AND each post card simultaneously).
+- **Contact page CONTACT heading ambiguity**: `locator('text=CONTACT')` matches both the nav link `[ CONTACT ]` AND the `<h1>` — use `page.getByRole('heading', { name: 'CONTACT' })` to target specifically.
+- **blog post 404**: `dynamicParams = false` on `app/blog/[slug]/page.tsx` ensures unknown slugs return HTTP 404 — verified via `response?.status()`.
+- **demo 404**: `dynamicParams = false` on demo page + `generateStaticParams` only includes `demoAvailable: true` projects — `/projects/retro-terminal/demo` returns 404.
+- **data-testid map confirmed**:
+  - Navigation: nav-home, nav-projects, nav-blog, nav-resume, nav-contact
+  - Layout: hit-counter, under-construction, footer
+  - Blog listing: blog-post-card, tag-filter, active-tag (ALL and current active tag)
+  - Blog post: blog-post-title, blog-post-tags, blog-content
+  - Projects grid: projects-grid, project-card
+  - Project detail: project-title, project-description, demo-link (only if demoAvailable)
+  - Demo page: demo-container (wraps entire demo area), demo-interactive (inside pixel-canvas component, loaded via next/dynamic)
+  - Resume: resume-content, resume-download
+  - Contact: contact-github, contact-linkedin, contact-email
+- **RSS content-type**: Returns `application/xml; charset=utf-8` — check with `.toContain('xml')` rather than exact match.
+- **Mobile viewport**: Use `page.setViewportSize({ width: 390, height: 844 })` — all layout elements remain visible at mobile width.
+- **83 tests total**, all passing: navigation (14), blog (15), projects (12), resume (8), contact (11), rss (9), mobile (14).
