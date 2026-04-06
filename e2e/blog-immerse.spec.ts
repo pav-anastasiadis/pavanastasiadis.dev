@@ -139,7 +139,7 @@ test.describe('Blog Immerse Mode', () => {
       await page.addInitScript({ content: mockYTScript });
       await page.reload();
 
-      await page.waitForTimeout(500);
+      await expect(page.locator('[data-testid="immerse-wrapper"]')).toBeAttached();
       await expect(page.locator('[data-testid="immerse-wrapper"]')).not.toHaveAttribute(
         'data-immerse-active'
       );
@@ -177,11 +177,25 @@ test.describe('Blog Immerse Mode', () => {
       for (let i = 0; i < 5; i++) {
         await toggle.click();
       }
-      await page.waitForTimeout(200);
       await expect(page.locator('[data-testid="immerse-wrapper"]')).toHaveAttribute(
         'data-immerse-active',
         'true'
       );
+    });
+
+    test('prefers-reduced-motion — overlay transition is instant', async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.goto('/blog');
+      await page.locator('[data-testid="immerse-toggle"]').click();
+      await expect(page.locator('[data-testid="immerse-overlay"]')).toBeVisible();
+      const transitionDuration = await page
+        .locator('[data-testid="immerse-overlay"]')
+        .evaluate((el) => window.getComputedStyle(el).transitionDuration);
+      // prefers-reduced-motion sets transition-duration: 0.01ms !important
+      // browsers may report this as '0s' or a very small value
+      const durationMs =
+        parseFloat(transitionDuration) * (transitionDuration.endsWith('ms') ? 1 : 1000);
+      expect(durationMs).toBeLessThan(100);
     });
   });
 });

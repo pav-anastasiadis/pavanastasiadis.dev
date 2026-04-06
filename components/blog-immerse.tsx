@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 declare global {
   interface Window {
-    YT: {
+    YT?: {
       Player: new (
         element: HTMLIFrameElement | string,
         config: {
@@ -15,7 +15,7 @@ declare global {
         }
       ) => YTPlayer;
     };
-    onYouTubeIframeAPIReady: () => void;
+    onYouTubeIframeAPIReady?: () => void;
   }
 }
 
@@ -32,7 +32,6 @@ interface YTPlayer {
 
 interface BlogImmersePreference {
   active: boolean;
-  mode: 'spotlight' | 'dark-shift';
 }
 
 const STORAGE_KEY = 'blog-immerse';
@@ -53,7 +52,7 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
   useEffect(() => {
     function initPlayer() {
       if (!iframeRef.current || playerRef.current) return;
-      playerRef.current = new window.YT.Player(iframeRef.current, {
+      playerRef.current = new window.YT!.Player(iframeRef.current, {
         events: {
           onReady: (event) => {
             event.target.setVolume(30);
@@ -147,14 +146,15 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
     }
 
     try {
-      const pref: BlogImmersePreference = { active: next, mode };
+      const pref: BlogImmersePreference = { active: next };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(pref));
     } catch {
       // ignore localStorage errors
     }
   }
 
-  const iframeSrc = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&mute=1&enablejsapi=1&loop=1&playlist=${VIDEO_ID}&controls=0&playsinline=1`;
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const iframeSrc = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&mute=1&enablejsapi=1&loop=1&playlist=${VIDEO_ID}&controls=0&playsinline=1&origin=${origin}`;
 
   return (
     <div
