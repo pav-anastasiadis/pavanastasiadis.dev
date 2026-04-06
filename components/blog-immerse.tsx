@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 declare global {
   interface Window {
@@ -28,14 +28,36 @@ interface YTPlayer {
   pauseVideo(): void;
   destroy(): void;
   getPlayerState(): number;
+  getCurrentTime(): number;
+  seekTo(seconds: number, allowSeekAhead: boolean): void;
 }
 
 interface BlogImmersePreference {
   active: boolean;
+  time?: number;
 }
 
 const STORAGE_KEY = 'blog-immerse';
 const VIDEO_ID = 'sWcLccMuCA8';
+const SAVE_INTERVAL_MS = 3000;
+
+function readPref(): BlogImmersePreference | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw) as BlogImmersePreference;
+  } catch {
+    /* noop */
+  }
+  return null;
+}
+
+function writePref(pref: BlogImmersePreference) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(pref));
+  } catch {
+    /* noop */
+  }
+}
 
 interface BlogImmerseProps {
   children: React.ReactNode;
@@ -47,7 +69,29 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
   const [isPlayerReady, setIsPlayerReady] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
-  const pendingUnmuteRef = useRef(false);
+  const saveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pendingResumeRef = useRef<number | false>(false);
+
+  const stopSaveInterval = useCallback(() => {
+    if (saveIntervalRef.current !== null) {
+      clearInterval(saveIntervalRef.current);
+      saveIntervalRef.current = null;
+    }
+  }, []);
+
+  const startSaveInterval = useCallback(() => {
+    stopSaveInterval();
+    saveIntervalRef.current = setInterval(() => {
+      if (playerRef.current) {
+        try {
+          const t = playerRef.current.getCurrentTime();
+          writePref({ active: true, time: t });
+        } catch {
+          /* noop */
+        }
+      }
+    }, SAVE_INTERVAL_MS);
+  }, [stopSaveInterval]);
 
   useEffect(() => {
     function initPlayer() {
@@ -57,14 +101,17 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
           onReady: (event) => {
             event.target.setVolume(30);
             setIsPlayerReady(true);
-            if (pendingUnmuteRef.current) {
+
+            if (pendingResumeRef.current !== false) {
               try {
+                const resumeTime = pendingResumeRef.current;
+                event.target.seekTo(resumeTime, true);
                 event.target.unMute();
                 event.target.playVideo();
               } catch {
-                // silent degradation
+                /* noop */
               }
-              pendingUnmuteRef.current = false;
+              pendingResumeRef.current = false;
             }
           },
         },
@@ -91,9 +138,18 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
     return () => {
       if (playerRef.current) {
         try {
+          const t = playerRef.current.getCurrentTime();
+          const pref = readPref();
+          if (pref?.active) {
+            writePref({ active: true, time: t });
+          }
+        } catch {
+          /* noop */
+        }
+        try {
           playerRef.current.destroy();
         } catch {
-          // ignore
+          /* noop */
         }
         playerRef.current = null;
       }
@@ -101,30 +157,32 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
   }, []);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const pref: BlogImmersePreference = JSON.parse(stored);
-        if (pref.active) {
-          setIsImmersed(true);
-          pendingUnmuteRef.current = true;
-        }
-      }
-    } catch {
-      // ignore localStorage errors
+    const pref = readPref();
+    if (pref?.active) {
+      setIsImmersed(true);
+      pendingResumeRef.current = pref.time ?? 0;
     }
   }, []);
 
   useEffect(() => {
-    if (!isPlayerReady || !pendingUnmuteRef.current) return;
+    if (!isPlayerReady || pendingResumeRef.current === false) return;
     try {
+      const resumeTime = pendingResumeRef.current;
+      playerRef.current?.seekTo(resumeTime, true);
       playerRef.current?.unMute();
       playerRef.current?.playVideo();
+      startSaveInterval();
     } catch {
-      // silent degradation
+      /* noop */
     }
-    pendingUnmuteRef.current = false;
-  }, [isPlayerReady]);
+    pendingResumeRef.current = false;
+  }, [isPlayerReady, startSaveInterval]);
+
+  useEffect(() => {
+    return () => {
+      stopSaveInterval();
+    };
+  }, [stopSaveInterval]);
 
   function handleToggle() {
     const next = !isImmersed;
@@ -135,26 +193,27 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
         try {
           playerRef.current.unMute();
           playerRef.current.playVideo();
+          startSaveInterval();
         } catch {
-          // visual-only fallback
+          /* noop */
         }
       } else {
-        pendingUnmuteRef.current = true;
+        pendingResumeRef.current = 0;
       }
+      writePref({ active: true, time: 0 });
     } else {
-      try {
-        playerRef.current?.mute();
-      } catch {
-        // ignore
+      stopSaveInterval();
+      let currentTime = 0;
+      if (playerRef.current) {
+        try {
+          currentTime = playerRef.current.getCurrentTime();
+          playerRef.current.pauseVideo();
+          playerRef.current.mute();
+        } catch {
+          /* noop */
+        }
       }
-      pendingUnmuteRef.current = false;
-    }
-
-    try {
-      const pref: BlogImmersePreference = { active: next };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(pref));
-    } catch {
-      // ignore localStorage errors
+      writePref({ active: false, time: currentTime });
     }
   }
 
@@ -162,7 +221,8 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
   useEffect(() => {
     setOrigin(window.location.origin);
   }, []);
-  const iframeSrc = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&mute=1&enablejsapi=1&loop=1&playlist=${VIDEO_ID}&controls=0&playsinline=1${origin ? `&origin=${origin}` : ''}`;
+
+  const iframeSrc = `https://www.youtube.com/embed/${VIDEO_ID}?mute=1&enablejsapi=1&loop=1&playlist=${VIDEO_ID}&controls=0&playsinline=1${origin ? `&origin=${origin}` : ''}`;
 
   return (
     <div
@@ -172,7 +232,6 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
     >
       {children}
 
-      {/* Hidden YouTube iframe — off-screen positioning preserves playback */}
       <iframe
         ref={iframeRef}
         data-testid="immerse-youtube-iframe"

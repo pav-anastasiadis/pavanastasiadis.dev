@@ -69,11 +69,11 @@ test.describe('Blog Immerse Mode', () => {
       expect(src).toContain('sWcLccMuCA8');
       expect(src).toContain('enablejsapi=1');
       expect(src).toContain('mute=1');
-      expect(src).toContain('autoplay=1');
       expect(src).toContain('loop=1');
       expect(src).toContain('playlist=sWcLccMuCA8');
       expect(src).toContain('controls=0');
       expect(src).toContain('playsinline=1');
+      expect(src).not.toContain('autoplay=1');
     });
 
     test('iframe is not visible on screen', async ({ page }) => {
@@ -101,6 +101,7 @@ test.describe('Blog Immerse Mode', () => {
       window.YT = {
         Player: function(el, config) {
           var self = this;
+          this._time = 0;
           setTimeout(function() {
             if (config && config.events && config.events.onReady) {
               config.events.onReady({ target: self });
@@ -111,10 +112,13 @@ test.describe('Blog Immerse Mode', () => {
       window.YT.Player.prototype.setVolume = function() {};
       window.YT.Player.prototype.unMute = function() {};
       window.YT.Player.prototype.playVideo = function() {};
+      window.YT.Player.prototype.pauseVideo = function() {};
       window.YT.Player.prototype.mute = function() {};
       window.YT.Player.prototype.destroy = function() {};
       window.YT.Player.prototype.getPlayerState = function() { return 1; };
       window.YT.Player.prototype.isMuted = function() { return false; };
+      window.YT.Player.prototype.getCurrentTime = function() { return this._time || 0; };
+      window.YT.Player.prototype.seekTo = function(t) { this._time = t; };
     `;
 
     test('localStorage persistence — active state survives reload', async ({ page }) => {
@@ -152,6 +156,22 @@ test.describe('Blog Immerse Mode', () => {
       await expect(page.locator('[data-testid="immerse-wrapper"]')).not.toHaveAttribute(
         'data-immerse-active'
       );
+    });
+
+    test('localStorage stores active:false when toggle is turned off', async ({ page }) => {
+      await page.route('**youtube.com/**', (route) => route.abort());
+      await page.evaluate(() => localStorage.removeItem('blog-immerse'));
+
+      const toggle = page.locator('[data-testid="immerse-toggle"]');
+      await toggle.click();
+      await toggle.click();
+
+      const stored = await page.evaluate(() => {
+        const raw = localStorage.getItem('blog-immerse');
+        return raw ? JSON.parse(raw) : null;
+      });
+      expect(stored).not.toBeNull();
+      expect(stored.active).toBe(false);
     });
 
     test('localStorage persistence — visual state restores even when YouTube is blocked', async ({
