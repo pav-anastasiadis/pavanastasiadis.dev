@@ -25,6 +25,9 @@
 # sisyphus
 .sisyphus/evidence/
 
+# playwright mcp
+.playwright-mcp/
+
 # misc
 .DS_Store
 *.pem
