@@ -153,8 +153,11 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
     }
   }
 
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const iframeSrc = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&mute=1&enablejsapi=1&loop=1&playlist=${VIDEO_ID}&controls=0&playsinline=1&origin=${origin}`;
+  const [origin, setOrigin] = useState('');
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
+  const iframeSrc = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&mute=1&enablejsapi=1&loop=1&playlist=${VIDEO_ID}&controls=0&playsinline=1${origin ? `&origin=${origin}` : ''}`;
 
   return (
     <div
