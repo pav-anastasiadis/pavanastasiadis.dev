@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
 import { test, expect } from '@playwright/test';
 
 test.describe('Blog Immerse Mode', () => {
@@ -9,6 +12,22 @@ test.describe('Blog Immerse Mode', () => {
   test.describe('Toggle button rendering', () => {
     test('button renders on blog index', async ({ page }) => {
       await expect(page.locator('[data-testid="immerse-toggle"]')).toBeVisible();
+    });
+
+    test('button renders on blog post page', async ({ page }) => {
+      const postPath = path.join(process.cwd(), 'content', 'blog', '__no-posts__.mdx');
+
+      fs.writeFileSync(
+        postPath,
+        `---\ntitle: 'No Posts'\ndate: '2026-01-01'\ndescription: 'Placeholder test post.'\n---\n\nPlaceholder post.\n`
+      );
+
+      try {
+        await page.goto('/blog/__no-posts__');
+        await expect(page.locator('[data-testid="immerse-toggle"]')).toBeVisible();
+      } finally {
+        fs.unlinkSync(postPath);
+      }
     });
 
     test('wrapper renders on blog index', async ({ page }) => {

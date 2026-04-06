@@ -49,6 +49,12 @@ body {
     transition: opacity 500ms ease;
   }
 
+  [data-immerse-active='true']
+    > *:not(.immerse-spotlight-overlay):not(.immerse-button):not(.immerse-iframe-hidden) {
+    position: relative;
+    z-index: 40;
+  }
+
   .immerse-dark-shift {
     --color-background: #1a1a2e;
     --color-on-surface: #e8e6e1;
