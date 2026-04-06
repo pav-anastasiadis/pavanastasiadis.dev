@@ -101,24 +101,29 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
   }, []);
 
   useEffect(() => {
-    if (!isPlayerReady) return;
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const pref: BlogImmersePreference = JSON.parse(stored);
         if (pref.active) {
           setIsImmersed(true);
-          try {
-            playerRef.current?.unMute();
-            playerRef.current?.playVideo();
-          } catch {
-            // silent degradation
-          }
+          pendingUnmuteRef.current = true;
         }
       }
     } catch {
       // ignore localStorage errors
     }
+  }, []);
+
+  useEffect(() => {
+    if (!isPlayerReady || !pendingUnmuteRef.current) return;
+    try {
+      playerRef.current?.unMute();
+      playerRef.current?.playVideo();
+    } catch {
+      // silent degradation
+    }
+    pendingUnmuteRef.current = false;
   }, [isPlayerReady]);
 
   function handleToggle() {

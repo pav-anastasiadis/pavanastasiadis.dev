@@ -153,6 +153,28 @@ test.describe('Blog Immerse Mode', () => {
         'data-immerse-active'
       );
     });
+
+    test('localStorage persistence — visual state restores even when YouTube is blocked', async ({
+      page,
+    }) => {
+      await page.route('**youtube.com/**', (route) => route.abort());
+      await page.goto('/blog');
+      await page.evaluate(() => localStorage.removeItem('blog-immerse'));
+
+      await page.locator('[data-testid="immerse-toggle"]').click();
+      await expect(page.locator('[data-testid="immerse-wrapper"]')).toHaveAttribute(
+        'data-immerse-active',
+        'true'
+      );
+
+      await page.reload();
+
+      await expect(page.locator('[data-testid="immerse-wrapper"]')).toHaveAttribute(
+        'data-immerse-active',
+        'true',
+        { timeout: 3000 }
+      );
+    });
   });
 
   test.describe('Accessibility attributes', () => {
