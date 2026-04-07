@@ -44,7 +44,7 @@ interface BlogImmersePreference {
 
 const STORAGE_KEY = 'blog-immerse';
 const SOUNDCLOUD_TRACK_URL = 'https://soundcloud.com/richarddjames/xtal';
-const SAVE_INTERVAL_MS = 3000;
+const SAVE_INTERVAL_MS = 1000;
 
 function readPref(): BlogImmersePreference | null {
   try {
@@ -80,6 +80,7 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
   const lastKnownPositionRef = useRef<number>(0);
   const saveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pendingResumeRef = useRef<number | false>(false);
+  const isTabClosingRef = useRef(false);
 
   const stopSaveInterval = useCallback(() => {
     if (saveIntervalRef.current !== null) {
@@ -161,7 +162,7 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
       if (widget) {
         try {
           const pref = readPref();
-          if (pref?.active) {
+          if (pref?.active && !isTabClosingRef.current) {
             writePref({ active: true, position: lastKnownPositionRef.current });
           }
         } catch (error) {
@@ -194,6 +195,15 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
   }, []);
 
   useEffect(() => {
+    const handleBeforeUnload = () => {
+      isTabClosingRef.current = true;
+      writePref({ active: false, position: 0 });
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
+  useEffect(() => {
     return () => {
       stopSaveInterval();
     };
@@ -207,16 +217,15 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
       if (isPlayerReady && widgetRef.current) {
         try {
           widgetRef.current.play();
-          widgetRef.current.seekTo(0);
-          lastKnownPositionRef.current = 0;
+          widgetRef.current.seekTo(lastKnownPositionRef.current);
           startSaveInterval();
         } catch (error) {
           console.warn('[BlogImmerse] Play failed on toggle:', error);
         }
       } else {
-        pendingResumeRef.current = 0;
+        pendingResumeRef.current = lastKnownPositionRef.current;
       }
-      writePref({ active: true, position: 0 });
+      writePref({ active: true, position: lastKnownPositionRef.current });
     } else {
       stopSaveInterval();
       const savedPosition = lastKnownPositionRef.current;
