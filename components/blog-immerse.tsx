@@ -4,58 +4,66 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 declare global {
   interface Window {
-    YT?: {
-      Player: new (
-        element: HTMLIFrameElement | string,
-        config: {
-          events: {
-            onReady?: (event: { target: YTPlayer }) => void;
-            onError?: (event: { data: number }) => void;
-          };
-        }
-      ) => YTPlayer;
+    SC?: {
+      Widget: ((iframe: HTMLIFrameElement | string) => SCWidget) & {
+        Events: typeof SCWidgetEvents;
+      };
     };
-    onYouTubeIframeAPIReady?: () => void;
   }
 }
 
-interface YTPlayer {
-  mute(): void;
-  unMute(): void;
-  isMuted(): boolean;
+interface SCWidget {
+  play(): void;
+  pause(): void;
+  toggle(): void;
+  seekTo(ms: number): void;
   setVolume(vol: number): void;
-  playVideo(): void;
-  pauseVideo(): void;
-  destroy(): void;
-  getPlayerState(): number;
-  getCurrentTime(): number;
-  seekTo(seconds: number, allowSeekAhead: boolean): void;
+  getVolume(callback: (vol: number) => void): void;
+  getPosition(callback: (pos: number) => void): void;
+  getDuration(callback: (dur: number) => void): void;
+  isPaused(callback: (paused: boolean) => void): void;
+  bind(event: string, callback: (...args: unknown[]) => void): void;
+  unbind(event: string): void;
 }
 
+const SCWidgetEvents = {
+  READY: 'ready',
+  PLAY: 'play',
+  PAUSE: 'pause',
+  FINISH: 'finish',
+  PLAY_PROGRESS: 'playProgress',
+  SEEK: 'seek',
+  ERROR: 'error',
+} as const;
+
 interface BlogImmersePreference {
+  version: 2;
   active: boolean;
-  time?: number;
+  position: number;
 }
 
 const STORAGE_KEY = 'blog-immerse';
-const VIDEO_ID = 'sWcLccMuCA8';
+const SOUNDCLOUD_TRACK_URL = 'https://soundcloud.com/richarddjames/xtal';
 const SAVE_INTERVAL_MS = 3000;
 
 function readPref(): BlogImmersePreference | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as BlogImmersePreference;
-  } catch {
-    /* noop */
+    if (raw) {
+      const parsed = JSON.parse(raw) as Record<string, unknown>;
+      if (parsed.version === 2) return parsed as unknown as BlogImmersePreference;
+    }
+  } catch (error) {
+    console.warn('[BlogImmerse] Failed to read preference:', error);
   }
   return null;
 }
 
-function writePref(pref: BlogImmersePreference) {
+function writePref(pref: Omit<BlogImmersePreference, 'version'>) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(pref));
-  } catch {
-    /* noop */
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 2, ...pref }));
+  } catch (error) {
+    console.warn('[BlogImmerse] Failed to write preference:', error);
   }
 }
 
@@ -68,7 +76,8 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
   const [isImmersed, setIsImmersed] = useState(false);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const playerRef = useRef<YTPlayer | null>(null);
+  const widgetRef = useRef<SCWidget | null>(null);
+  const lastKnownPositionRef = useRef<number>(0);
   const saveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pendingResumeRef = useRef<number | false>(false);
 
@@ -82,101 +91,107 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
   const startSaveInterval = useCallback(() => {
     stopSaveInterval();
     saveIntervalRef.current = setInterval(() => {
-      if (playerRef.current) {
-        try {
-          const t = playerRef.current.getCurrentTime();
-          writePref({ active: true, time: t });
-        } catch {
-          /* noop */
-        }
-      }
+      writePref({ active: true, position: lastKnownPositionRef.current });
     }, SAVE_INTERVAL_MS);
   }, [stopSaveInterval]);
 
   useEffect(() => {
-    function initPlayer() {
-      if (!iframeRef.current || playerRef.current) return;
-      playerRef.current = new window.YT!.Player(iframeRef.current, {
-        events: {
-          onReady: (event) => {
-            event.target.setVolume(30);
-            setIsPlayerReady(true);
+    function initWidget() {
+      if (!iframeRef.current || widgetRef.current) return;
+      const widget = window.SC!.Widget(iframeRef.current);
+      widgetRef.current = widget;
 
-            if (pendingResumeRef.current !== false) {
+      widget.bind(SCWidgetEvents.READY, () => {
+        widget.setVolume(30);
+        setIsPlayerReady(true);
+
+        if (pendingResumeRef.current !== false) {
+          const resumeMs = pendingResumeRef.current;
+          pendingResumeRef.current = false;
+          try {
+            widget.play();
+            // seekTo after play() — SoundCloud seekTo is unreliable before playback starts;
+            // delay 300ms to let buffering begin before seeking
+            setTimeout(() => {
               try {
-                const resumeTime = pendingResumeRef.current;
-                event.target.seekTo(resumeTime, true);
-                event.target.unMute();
-                event.target.playVideo();
-              } catch {
-                /* noop */
+                widget.seekTo(resumeMs);
+              } catch (error) {
+                console.warn('[BlogImmerse] seekTo failed:', error);
               }
-              pendingResumeRef.current = false;
-            }
-          },
-        },
+            }, 300);
+            startSaveInterval();
+          } catch (error) {
+            console.warn('[BlogImmerse] Resume play failed (autoplay may be blocked):', error);
+          }
+        }
+      });
+
+      widget.bind(SCWidgetEvents.PLAY_PROGRESS, (...args: unknown[]) => {
+        const data = args[0] as { currentPosition: number };
+        lastKnownPositionRef.current = data.currentPosition;
+      });
+
+      widget.bind(SCWidgetEvents.ERROR, (error: unknown) => {
+        console.warn('[BlogImmerse] SoundCloud widget error:', error);
       });
     }
 
-    if (window.YT?.Player) {
-      initPlayer();
+    if (window.SC?.Widget) {
+      initWidget();
     } else {
-      const prevCallback = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = () => {
-        initPlayer();
-        prevCallback?.();
-      };
-
-      if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+      if (!document.querySelector('script[src*="w.soundcloud.com/player/api.js"]')) {
         const script = document.createElement('script');
-        script.src = 'https://www.youtube.com/iframe_api';
+        script.src = 'https://w.soundcloud.com/player/api.js';
         script.async = true;
+        script.onload = () => initWidget();
         document.head.appendChild(script);
+      } else {
+        const interval = setInterval(() => {
+          if (window.SC?.Widget) {
+            clearInterval(interval);
+            initWidget();
+          }
+        }, 50);
+        setTimeout(() => clearInterval(interval), 10000);
       }
     }
 
     return () => {
-      if (playerRef.current) {
+      const widget = widgetRef.current;
+      if (widget) {
         try {
-          const t = playerRef.current.getCurrentTime();
           const pref = readPref();
           if (pref?.active) {
-            writePref({ active: true, time: t });
+            writePref({ active: true, position: lastKnownPositionRef.current });
           }
-        } catch {
-          /* noop */
+        } catch (error) {
+          console.warn('[BlogImmerse] Failed to save position on unmount:', error);
         }
         try {
-          playerRef.current.destroy();
-        } catch {
-          /* noop */
+          widget.pause();
+        } catch (error) {
+          console.warn('[BlogImmerse] Failed to pause on unmount:', error);
         }
-        playerRef.current = null;
+        try {
+          widget.unbind(SCWidgetEvents.READY);
+          widget.unbind(SCWidgetEvents.PLAY_PROGRESS);
+          widget.unbind(SCWidgetEvents.ERROR);
+        } catch (error) {
+          console.warn('[BlogImmerse] Failed to unbind widget events:', error);
+        }
+        widgetRef.current = null;
       }
+      stopSaveInterval();
     };
-  }, []);
+  }, [startSaveInterval, stopSaveInterval]);
 
   useEffect(() => {
     const pref = readPref();
     if (pref?.active) {
       setIsImmersed(true);
-      pendingResumeRef.current = pref.time ?? 0;
+      pendingResumeRef.current = pref.position;
     }
   }, []);
-
-  useEffect(() => {
-    if (!isPlayerReady || pendingResumeRef.current === false) return;
-    try {
-      const resumeTime = pendingResumeRef.current;
-      playerRef.current?.seekTo(resumeTime, true);
-      playerRef.current?.unMute();
-      playerRef.current?.playVideo();
-      startSaveInterval();
-    } catch {
-      /* noop */
-    }
-    pendingResumeRef.current = false;
-  }, [isPlayerReady, startSaveInterval]);
 
   useEffect(() => {
     return () => {
@@ -189,40 +204,32 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
     setIsImmersed(next);
 
     if (next) {
-      if (isPlayerReady && playerRef.current) {
+      if (isPlayerReady && widgetRef.current) {
         try {
-          playerRef.current.unMute();
-          playerRef.current.playVideo();
+          widgetRef.current.play();
           startSaveInterval();
-        } catch {
-          /* noop */
+        } catch (error) {
+          console.warn('[BlogImmerse] Play failed on toggle:', error);
         }
       } else {
         pendingResumeRef.current = 0;
       }
-      writePref({ active: true, time: 0 });
+      writePref({ active: true, position: 0 });
     } else {
       stopSaveInterval();
-      let currentTime = 0;
-      if (playerRef.current) {
+      const savedPosition = lastKnownPositionRef.current;
+      if (widgetRef.current) {
         try {
-          currentTime = playerRef.current.getCurrentTime();
-          playerRef.current.pauseVideo();
-          playerRef.current.mute();
-        } catch {
-          /* noop */
+          widgetRef.current.pause();
+        } catch (error) {
+          console.warn('[BlogImmerse] Pause failed on toggle:', error);
         }
       }
-      writePref({ active: false, time: currentTime });
+      writePref({ active: false, position: savedPosition });
     }
   }
 
-  const [origin, setOrigin] = useState('');
-  useEffect(() => {
-    setOrigin(window.location.origin);
-  }, []);
-
-  const iframeSrc = `https://www.youtube.com/embed/${VIDEO_ID}?mute=1&enablejsapi=1&loop=1&playlist=${VIDEO_ID}&controls=0&playsinline=1${origin ? `&origin=${origin}` : ''}`;
+  const iframeSrc = `https://w.soundcloud.com/player/?url=${encodeURIComponent(SOUNDCLOUD_TRACK_URL)}&auto_play=false&show_artwork=false&show_comments=false&show_user=false&show_reposts=false&visual=false`;
 
   return (
     <div
@@ -234,14 +241,13 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
 
       <iframe
         ref={iframeRef}
-        data-testid="immerse-youtube-iframe"
+        data-testid="immerse-audio-iframe"
         className="immerse-iframe-hidden"
         src={iframeSrc}
         allow="autoplay"
         title="Background music"
         tabIndex={-1}
         aria-hidden="true"
-        frameBorder="0"
       />
 
       {isImmersed && mode === 'spotlight' && (
