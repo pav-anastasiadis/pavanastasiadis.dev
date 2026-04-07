@@ -207,6 +207,8 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
       if (isPlayerReady && widgetRef.current) {
         try {
           widgetRef.current.play();
+          widgetRef.current.seekTo(0);
+          lastKnownPositionRef.current = 0;
           startSaveInterval();
         } catch (error) {
           console.warn('[BlogImmerse] Play failed on toggle:', error);
