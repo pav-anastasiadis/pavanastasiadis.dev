@@ -33,3 +33,7 @@
 ### Volume
 - **Decision**: `player.setVolume(30)` on player ready (30% volume)
 - **Rationale**: Avoid jarring full-volume unmute on first click
+
+## [2026-04-07] Verification Notes
+- The dark-shift mode wiring is correct as-is: the wrapper class is conditional on both `mode === 'dark-shift'` and `isImmersed`, and the overlay is spotlight-only.
+- A pre-existing runtime bug surfaced during validation: `VIDEO_ID` was undefined in the YouTube iframe URL. Restoring the constant was required to make `/blog` load for browser verification.

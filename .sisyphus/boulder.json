@@ -1,57 +1,30 @@
 {
-  "active_plan": "/home/pav.linux/Work/pavanastasiadis.dev/.sisyphus/plans/blog-immerse-mode.md",
-  "started_at": "2026-04-06T10:40:07.548Z",
+  "active_plan": "/home/pav.linux/Work/pavanastasiadis.dev/.sisyphus/plans/blog-immerse-soundcloud.md",
+  "started_at": "2026-04-07T11:26:51.696Z",
   "session_ids": [
-    "ses_29dbf7f23ffeRsGpfgM0TnQjgb",
-    "ses_29d6f94a9ffeoUbuQ05GuBbQ0Z",
-    "ses_29d6f579dffeTAVl9GtGVROVVB",
-    "ses_29d6f0e9cffesNNTjUDNxjog02",
-    "ses_29d6ec493ffeb82z3iov951yYI"
+    "ses_298774ee0ffeFCxzlQ78QLjOu1",
+    "ses_297daddd8ffeJkbzKRYxv4O4ry",
+    "ses_297daad1cffeOMAmV6I6T5GybQ",
+    "ses_297da80d5ffeC5cmEeB0d7XAnK",
+    "ses_297da3d9affe7yM8LzPmnw70Mr"
   ],
-  "plan_name": "blog-immerse-mode",
+  "plan_name": "blog-immerse-soundcloud",
+  "agent": "atlas",
   "session_origins": {
-    "ses_29dbf7f23ffeRsGpfgM0TnQjgb": "direct",
-    "ses_29d6f94a9ffeoUbuQ05GuBbQ0Z": "appended",
-    "ses_29d6f579dffeTAVl9GtGVROVVB": "appended",
-    "ses_29d6f0e9cffesNNTjUDNxjog02": "appended",
-    "ses_29d6ec493ffeb82z3iov951yYI": "appended"
+    "ses_298774ee0ffeFCxzlQ78QLjOu1": "direct",
+    "ses_297daddd8ffeJkbzKRYxv4O4ry": "appended",
+    "ses_297daad1cffeOMAmV6I6T5GybQ": "appended",
+    "ses_297da80d5ffeC5cmEeB0d7XAnK": "appended",
+    "ses_297da3d9affe7yM8LzPmnw70Mr": "appended"
   },
   "task_sessions": {
-    "todo:1": {
-      "task_key": "todo:1",
-      "task_label": "1",
-      "task_title": "Immerse Mode CSS Utilities & Visual Overlay Styles",
-      "session_id": "ses_29d9cc92effeU9rPk77SH9grB6",
-      "agent": "Sisyphus-Junior",
-      "category": "quick",
-      "updated_at": "2026-04-06T10:44:00.104Z"
-    },
     "todo:2": {
       "task_key": "todo:2",
       "task_label": "2",
-      "task_title": "BlogImmerse Component with YouTube Background Music",
-      "session_id": "ses_29d99a177ffe3rhX0i7JbhPk7q",
-      "agent": "Sisyphus-Junior",
-      "category": "deep",
-      "updated_at": "2026-04-06T10:49:05.043Z"
-    },
-    "todo:4": {
-      "task_key": "todo:4",
-      "task_label": "4",
-      "task_title": "Playwright E2E Tests for Immerse Mode",
-      "session_id": "ses_29d929a78ffe0AhZjHYkCh93Nb",
-      "agent": "Sisyphus-Junior",
-      "category": "unspecified-high",
-      "updated_at": "2026-04-06T11:24:07.115Z"
-    },
-    "final-wave:f1": {
-      "task_key": "final-wave:f1",
-      "task_label": "F1",
-      "task_title": "**Plan Compliance Audit** — `oracle`",
-      "session_id": "ses_29d1b97caffeBWGk7R8Ba1geuq",
-      "agent": "Sisyphus-Junior",
-      "category": "unspecified-high",
-      "updated_at": "2026-04-06T13:34:28.184Z"
+      "task_title": "Rewrite blog-immerse.tsx core logic with SoundCloud Widget API",
+      "session_id": "ses_297d0f4e1ffexU8yTsliF9k5yE",
+      "agent": "oracle",
+      "updated_at": "2026-04-07T13:44:34.219Z"
     }
   }
 }

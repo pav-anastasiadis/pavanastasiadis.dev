@@ -63,3 +63,11 @@
 - `frameBorder="0"` on iframe is a React deprecated prop but ESLint/TypeScript accepted it cleanly
 - Build: ✅ Exit 0 — TypeScript strict, 12 static pages generated
 - Lint: ✅ Exit 0 — no ESLint errors
+
+## [2026-04-07] Task 3 — Dark-shift verification
+- Verified `mode === 'dark-shift' && isImmersed` gates the wrapper class in `components/blog-immerse.tsx`.
+- Verified the spotlight overlay is explicitly `mode === 'spotlight'` only.
+- Verified `.immerse-dark-shift` in `app/globals.css` overrides `--color-background` and related color vars.
+- Playwright confirmed `--color-background` changed from `#fbf9f4` to `#1a1a2e` after manually adding the class.
+- Spotlight verification passed: overlay visible, dark-shift class absent in spotlight mode.
+- Verification surfaced a separate runtime regression: `VIDEO_ID` was undefined and prevented `/blog` from loading.
