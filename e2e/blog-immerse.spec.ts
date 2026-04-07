@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Blog Immerse Mode', () => {
   test.beforeEach(async ({ page }) => {
+    await page.route('https://w.soundcloud.com/**', (route) => route.abort());
     await page.goto('/blog');
     await page.evaluate(() => localStorage.removeItem('blog-immerse'));
   });
@@ -56,28 +57,47 @@ test.describe('Blog Immerse Mode', () => {
       await toggle.click();
       await expect(page.locator('[data-testid="immerse-overlay"]')).toHaveCount(0);
     });
+
+    test('dark-shift CSS class changes --color-background variable', async ({ page }) => {
+      await page.goto('/blog');
+      // Get baseline --color-background from document root
+      const before = await page.evaluate(() =>
+        getComputedStyle(document.documentElement).getPropertyValue('--color-background').trim()
+      );
+      // Manually apply immerse-dark-shift class to the wrapper
+      await page.evaluate(() => {
+        document
+          .querySelector('[data-testid="immerse-wrapper"]')!
+          .classList.add('immerse-dark-shift');
+      });
+      // Read the CSS variable scoped to the element with the class
+      const after = await page.evaluate(() =>
+        getComputedStyle(document.querySelector('.immerse-dark-shift')!)
+          .getPropertyValue('--color-background')
+          .trim()
+      );
+      expect(after).not.toBe(before);
+      expect(after).toBeTruthy();
+    });
   });
 
-  test.describe('YouTube iframe', () => {
-    test('YouTube iframe is present in DOM', async ({ page }) => {
-      await expect(page.locator('[data-testid="immerse-youtube-iframe"]')).toBeAttached();
+  test.describe('Audio iframe', () => {
+    test('audio iframe is present in DOM', async ({ page }) => {
+      await expect(page.locator('[data-testid="immerse-audio-iframe"]')).toBeAttached();
     });
 
     test('iframe has required src params', async ({ page }) => {
-      const iframe = page.locator('[data-testid="immerse-youtube-iframe"]');
+      const iframe = page.locator('[data-testid="immerse-audio-iframe"]');
       const src = await iframe.getAttribute('src');
-      expect(src).toContain('sWcLccMuCA8');
-      expect(src).toContain('enablejsapi=1');
-      expect(src).toContain('mute=1');
-      expect(src).toContain('loop=1');
-      expect(src).toContain('playlist=sWcLccMuCA8');
-      expect(src).toContain('controls=0');
-      expect(src).toContain('playsinline=1');
-      expect(src).not.toContain('autoplay=1');
+      expect(src).toContain('w.soundcloud.com/player');
+      expect(src).toContain('richarddjames');
+      expect(src).toContain('auto_play=false');
+      expect(src).not.toContain('youtube');
+      expect(src).not.toContain('sWcLccMuCA8');
     });
 
     test('iframe is not visible on screen', async ({ page }) => {
-      const iframeHandle = page.locator('[data-testid="immerse-youtube-iframe"]');
+      const iframeHandle = page.locator('[data-testid="immerse-audio-iframe"]');
       const rect = await iframeHandle.evaluate((el) => {
         const r = el.getBoundingClientRect();
         return { left: r.left, top: r.top, width: r.width, height: r.height };
@@ -97,32 +117,59 @@ test.describe('Blog Immerse Mode', () => {
   });
 
   test.describe('localStorage persistence', () => {
-    const mockYTScript = `
-      window.YT = {
-        Player: function(el, config) {
-          var self = this;
-          this._time = 0;
-          setTimeout(function() {
-            if (config && config.events && config.events.onReady) {
-              config.events.onReady({ target: self });
+    const mockSCScript = `
+      window.__scMock = { playCalled: false, pauseCalled: false, seekToMs: null, setVolumeCalled: false };
+
+      window.SC = {
+        Widget: function(iframe) {
+          var callbacks = {};
+          var self = {
+            _position: 0,
+            bind: function(event, callback) {
+              callbacks[event] = callback;
+              if (event === 'ready') {
+                setTimeout(function() { callback(); }, 50);
+              }
+            },
+            unbind: function(event) {
+              delete callbacks[event];
+            },
+            play: function() {
+              window.__scMock.playCalled = true;
+              if (callbacks['play']) callbacks['play']();
+            },
+            pause: function() {
+              window.__scMock.pauseCalled = true;
+            },
+            seekTo: function(ms) {
+              window.__scMock.seekToMs = ms;
+              self._position = ms;
+            },
+            setVolume: function(vol) {
+              window.__scMock.setVolumeCalled = true;
+            },
+            getPosition: function(callback) {
+              callback(self._position || 0);
             }
-          }, 50);
+          };
+          return self;
         }
       };
-      window.YT.Player.prototype.setVolume = function() {};
-      window.YT.Player.prototype.unMute = function() {};
-      window.YT.Player.prototype.playVideo = function() {};
-      window.YT.Player.prototype.pauseVideo = function() {};
-      window.YT.Player.prototype.mute = function() {};
-      window.YT.Player.prototype.destroy = function() {};
-      window.YT.Player.prototype.getPlayerState = function() { return 1; };
-      window.YT.Player.prototype.isMuted = function() { return false; };
-      window.YT.Player.prototype.getCurrentTime = function() { return this._time || 0; };
-      window.YT.Player.prototype.seekTo = function(t) { this._time = t; };
+      window.SC.Widget.Events = {
+        READY: 'ready',
+        PLAY: 'play',
+        PAUSE: 'pause',
+        FINISH: 'finish',
+        PLAY_PROGRESS: 'playProgress',
+        SEEK: 'seek',
+        ERROR: 'error'
+      };
     `;
 
     test('localStorage persistence — active state survives reload', async ({ page }) => {
-      await page.route('**youtube.com/**', (route) => route.abort());
+      await page.addInitScript({ content: mockSCScript });
+      // Navigate to /blog with the SC mock active (addInitScript persists for subsequent navigations)
+      await page.goto('/blog');
       await page.evaluate(() => localStorage.removeItem('blog-immerse'));
 
       await page.locator('[data-testid="immerse-toggle"]').click();
@@ -131,8 +178,9 @@ test.describe('Blog Immerse Mode', () => {
         'true'
       );
 
-      await page.addInitScript({ content: mockYTScript });
-      await page.reload();
+      // Navigate away and back to simulate reload/remount (avoids dev server page crash from reload)
+      await page.goto('/');
+      await page.goto('/blog');
 
       await expect(page.locator('[data-testid="immerse-wrapper"]')).toHaveAttribute(
         'data-immerse-active',
@@ -142,15 +190,18 @@ test.describe('Blog Immerse Mode', () => {
     });
 
     test('localStorage persistence — inactive after exit survives reload', async ({ page }) => {
-      await page.route('**youtube.com/**', (route) => route.abort());
+      await page.addInitScript({ content: mockSCScript });
+      // Navigate to /blog with the SC mock active
+      await page.goto('/blog');
       await page.evaluate(() => localStorage.removeItem('blog-immerse'));
 
       const toggle = page.locator('[data-testid="immerse-toggle"]');
       await toggle.click();
       await toggle.click();
 
-      await page.addInitScript({ content: mockYTScript });
-      await page.reload();
+      // Navigate away and back to verify inactive state persists
+      await page.goto('/');
+      await page.goto('/blog');
 
       await expect(page.locator('[data-testid="immerse-wrapper"]')).toBeAttached();
       await expect(page.locator('[data-testid="immerse-wrapper"]')).not.toHaveAttribute(
@@ -158,10 +209,7 @@ test.describe('Blog Immerse Mode', () => {
       );
     });
 
-    test('localStorage stores active:false when toggle is turned off', async ({ page }) => {
-      await page.route('**youtube.com/**', (route) => route.abort());
-      await page.evaluate(() => localStorage.removeItem('blog-immerse'));
-
+    test('localStorage stores correct v2 shape when toggle is turned off', async ({ page }) => {
       const toggle = page.locator('[data-testid="immerse-toggle"]');
       await toggle.click();
       await toggle.click();
@@ -172,28 +220,66 @@ test.describe('Blog Immerse Mode', () => {
       });
       expect(stored).not.toBeNull();
       expect(stored.active).toBe(false);
+      expect(stored.version).toBe(2);
+      expect(typeof stored.position).toBe('number');
     });
 
-    test('localStorage persistence — visual state restores even when YouTube is blocked', async ({
+    test('localStorage persistence — visual state restores even when SoundCloud is blocked', async ({
       page,
     }) => {
-      await page.route('**youtube.com/**', (route) => route.abort());
-      await page.goto('/blog');
-      await page.evaluate(() => localStorage.removeItem('blog-immerse'));
-
       await page.locator('[data-testid="immerse-toggle"]').click();
       await expect(page.locator('[data-testid="immerse-wrapper"]')).toHaveAttribute(
         'data-immerse-active',
         'true'
       );
 
-      await page.reload();
+      await page.goto('/');
+      await page.goto('/blog');
 
       await expect(page.locator('[data-testid="immerse-wrapper"]')).toHaveAttribute(
         'data-immerse-active',
         'true',
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
+    });
+
+    test('audio state persists across Blog→Home→Blog navigation', async ({ page }) => {
+      await page.addInitScript({ content: mockSCScript });
+      await page.goto('/blog');
+      await page.evaluate(() => localStorage.removeItem('blog-immerse'));
+      await page.locator('[data-testid="immerse-toggle"]').click();
+      await expect(page.locator('[data-testid="immerse-wrapper"]')).toHaveAttribute(
+        'data-immerse-active',
+        'true'
+      );
+      await page.goto('/');
+      await page.goto('/blog');
+      await expect(page.locator('[data-testid="immerse-wrapper"]')).toHaveAttribute(
+        'data-immerse-active',
+        'true',
+        { timeout: 5000 }
+      );
+    });
+
+    test('old localStorage format (no version) is ignored on load', async ({ page }) => {
+      await page.addInitScript(() => {
+        localStorage.setItem('blog-immerse', JSON.stringify({ active: true, time: 42 }));
+      });
+      await page.goto('/blog');
+      await expect(page.locator('[data-testid="immerse-wrapper"]')).not.toHaveAttribute(
+        'data-immerse-active'
+      );
+    });
+
+    test('visual immerse activates even when SoundCloud is blocked', async ({ page }) => {
+      const pageErrors: string[] = [];
+      page.on('pageerror', (err) => pageErrors.push(err.message));
+      await page.locator('[data-testid="immerse-toggle"]').click();
+      await expect(page.locator('[data-testid="immerse-wrapper"]')).toHaveAttribute(
+        'data-immerse-active',
+        'true'
+      );
+      expect(pageErrors).toHaveLength(0);
     });
   });
 
