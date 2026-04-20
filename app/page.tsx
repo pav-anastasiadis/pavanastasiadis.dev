@@ -1,15 +1,11 @@
+import InkWaveGrid from '@/components/InkWaveGrid';
 import TimezoneClock from '@/components/TimezoneClock';
 
 export default function HomePage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-24 flex flex-col items-center gap-16">
-      {/* GIF Placeholder */}
-      <div
-        data-testid="gif-placeholder"
-        className="w-full max-w-md aspect-[4/3] bg-surface-container-low rounded-sm flex items-center justify-center border-2 border-dashed border-outline-variant/30"
-      >
-        <p className="text-on-surface-variant text-sm">Pixel art coming soon</p>
-      </div>
+      {/* Ink Wave Grid */}
+      <InkWaveGrid />
 
       {/* Timezone Clock */}
       <TimezoneClock />
