@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 
-const GAP = 10;
-const R = 2.5;
+const DOTS_PER_WIDTH = 60;
 const ASPECT = 4 / 3;
 
 // Simplex-ish 2D noise setup
@@ -83,11 +82,11 @@ interface Blob {
   seed: number;
 }
 
-function makeBlob(x: number, y: number): Blob {
+function makeBlob(x: number, y: number, canvasW: number): Blob {
   const nLobes = (5 + Math.random() * 4) | 0;
   const angles: number[] = [];
   const radii: number[] = [];
-  const baseR = 60 + Math.random() * 80;
+  const baseR = canvasW * (0.08 + Math.random() * 0.12);
   for (let i = 0; i < nLobes; i++) {
     angles.push((i / nLobes) * Math.PI * 2 + (Math.random() - 0.5) * 0.4);
     radii.push(0.5 + Math.random() * 0.8);
@@ -135,7 +134,7 @@ export default function InkWaveGrid() {
   const blobsRef = useRef<Blob[]>([]);
   const tRef = useRef(0);
   const rafRef = useRef<number>(0);
-  const sizeRef = useRef({ cols: 0, rows: 0, w: 0, h: 0, dpr: 1 });
+  const sizeRef = useRef({ cols: 0, rows: 0, w: 0, h: 0, dpr: 1, gap: 0, r: 0 });
 
   const resize = useCallback(() => {
     const container = containerRef.current;
@@ -143,15 +142,17 @@ export default function InkWaveGrid() {
     if (!container || !canvas) return;
 
     const containerW = container.clientWidth;
-    const cols = Math.max(1, Math.floor(containerW / GAP));
+    const gap = Math.max(6, Math.round(containerW / DOTS_PER_WIDTH));
+    const r = Math.max(1, gap * 0.22);
+    const cols = Math.max(1, Math.floor(containerW / gap));
     const rows = Math.max(1, Math.round(cols / ASPECT));
-    const w = cols * GAP;
-    const h = rows * GAP;
+    const w = cols * gap;
+    const h = rows * gap;
     const dpr = window.devicePixelRatio || 1;
 
     canvas.width = w * dpr;
     canvas.height = h * dpr;
-    sizeRef.current = { cols, rows, w, h, dpr };
+    sizeRef.current = { cols, rows, w, h, dpr, gap, r };
   }, []);
 
   const draw = useCallback(() => {
@@ -160,7 +161,7 @@ export default function InkWaveGrid() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const { cols, rows, w, h, dpr } = sizeRef.current;
+    const { cols, rows, w, h, dpr, gap, r } = sizeRef.current;
     if (cols === 0) return;
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -169,8 +170,8 @@ export default function InkWaveGrid() {
 
     for (let col = 0; col < cols; col++) {
       for (let row = 0; row < rows; row++) {
-        const cx = col * GAP + GAP / 2;
-        const cy = row * GAP + GAP / 2;
+        const cx = col * gap + gap / 2;
+        const cy = row * gap + gap / 2;
 
         let val = 0.08;
         val += coastWave(cx, cy, tRef.current, h) * 0.55;
@@ -181,7 +182,7 @@ export default function InkWaveGrid() {
 
         const opacity = Math.max(0.03, Math.min(1, val));
         ctx.beginPath();
-        ctx.arc(cx, cy, R, 0, Math.PI * 2);
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
         ctx.globalAlpha = opacity;
         ctx.fill();
       }
@@ -206,7 +207,9 @@ export default function InkWaveGrid() {
       const { w, h } = sizeRef.current;
       const sx = w / rect.width;
       const sy = h / rect.height;
-      blobsRef.current.push(makeBlob((e.clientX - rect.left) * sx, (e.clientY - rect.top) * sy));
+      blobsRef.current.push(
+        makeBlob((e.clientX - rect.left) * sx, (e.clientY - rect.top) * sy, sizeRef.current.w)
+      );
     };
 
     const ro = new ResizeObserver(() => resize());
