@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 
-const DOTS_PER_WIDTH = 60;
+const DOTS_PER_WIDTH = 240;
 const ASPECT = 4 / 3;
 
 // Simplex-ish 2D noise setup
@@ -142,7 +142,7 @@ export default function InkWaveGrid() {
     if (!container || !canvas) return;
 
     const containerW = container.clientWidth;
-    const gap = Math.max(6, Math.round(containerW / DOTS_PER_WIDTH));
+    const gap = Math.max(3, Math.round(containerW / DOTS_PER_WIDTH));
     const r = Math.max(1, gap * 0.22);
     const cols = Math.max(1, Math.floor(containerW / gap));
     const rows = Math.max(1, Math.round(cols / ASPECT));
