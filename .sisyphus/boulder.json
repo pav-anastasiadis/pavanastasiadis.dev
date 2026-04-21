@@ -1,30 +1,60 @@
 {
-  "active_plan": "/home/pav.linux/Work/pavanastasiadis.dev/.sisyphus/plans/blog-immerse-soundcloud.md",
-  "started_at": "2026-04-07T11:26:51.696Z",
+  "active_plan": "/home/pav.linux/Work/pavanastasiadis.dev/.sisyphus/plans/ink-wave-grid-optimise.md",
+  "started_at": "2026-04-21T11:15:56.545Z",
   "session_ids": [
-    "ses_298774ee0ffeFCxzlQ78QLjOu1",
-    "ses_297daddd8ffeJkbzKRYxv4O4ry",
-    "ses_297daad1cffeOMAmV6I6T5GybQ",
-    "ses_297da80d5ffeC5cmEeB0d7XAnK",
-    "ses_297da3d9affe7yM8LzPmnw70Mr"
+    "ses_253d893e3ffedke6Yz1UZdCnLJ",
+    "ses_250344f45ffeZ1RJTTyahxfJ06"
   ],
-  "plan_name": "blog-immerse-soundcloud",
+  "plan_name": "ink-wave-grid-optimise",
   "agent": "atlas",
   "session_origins": {
-    "ses_298774ee0ffeFCxzlQ78QLjOu1": "direct",
-    "ses_297daddd8ffeJkbzKRYxv4O4ry": "appended",
-    "ses_297daad1cffeOMAmV6I6T5GybQ": "appended",
-    "ses_297da80d5ffeC5cmEeB0d7XAnK": "appended",
-    "ses_297da3d9affe7yM8LzPmnw70Mr": "appended"
+    "ses_253d893e3ffedke6Yz1UZdCnLJ": "direct",
+    "ses_250344f45ffeZ1RJTTyahxfJ06": "appended"
   },
   "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "Hoist `F2`/`G2` constants and extract `dot()` helper",
+      "session_id": "ses_2503dc389ffeTmZG5PpifjerbO",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-04-21T11:18:23.006Z"
+    },
     "todo:2": {
       "task_key": "todo:2",
       "task_label": "2",
-      "task_title": "Rewrite blog-immerse.tsx core logic with SoundCloud Widget API",
-      "session_id": "ses_297d0f4e1ffexU8yTsliF9k5yE",
+      "task_title": "Replace per-dot `fillStyle` string with `globalAlpha`",
+      "session_id": "ses_2503b65d8ffeJTG3QoHmJzW3oO",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-04-21T11:20:56.029Z"
+    },
+    "todo:3": {
+      "task_key": "todo:3",
+      "task_label": "3",
+      "task_title": "Add `devicePixelRatio` support",
+      "session_id": "ses_250395ccefferpcvnVCmEfipnD",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-04-21T11:22:30.272Z"
+    },
+    "todo:4": {
+      "task_key": "todo:4",
+      "task_label": "4",
+      "task_title": "Make `GAP`, `R`, and blob `baseR` responsive to canvas width",
+      "session_id": "ses_2503786f0ffe3ak4Hu9LjIzQIq",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-04-21T11:25:27.715Z"
+    },
+    "todo:5": {
+      "task_key": "todo:5",
+      "task_label": "5",
+      "task_title": "Final integration verification",
+      "session_id": "ses_250344f45ffeZ1RJTTyahxfJ06",
       "agent": "oracle",
-      "updated_at": "2026-04-07T13:44:34.219Z"
+      "updated_at": "2026-04-21T11:28:28.766Z"
     }
   }
 }
