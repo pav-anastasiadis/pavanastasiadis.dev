@@ -135,7 +135,7 @@ export default function InkWaveGrid() {
   const blobsRef = useRef<Blob[]>([]);
   const tRef = useRef(0);
   const rafRef = useRef<number>(0);
-  const sizeRef = useRef({ cols: 0, rows: 0, w: 0, h: 0 });
+  const sizeRef = useRef({ cols: 0, rows: 0, w: 0, h: 0, dpr: 1 });
 
   const resize = useCallback(() => {
     const container = containerRef.current;
@@ -147,10 +147,11 @@ export default function InkWaveGrid() {
     const rows = Math.max(1, Math.round(cols / ASPECT));
     const w = cols * GAP;
     const h = rows * GAP;
+    const dpr = window.devicePixelRatio || 1;
 
-    canvas.width = w;
-    canvas.height = h;
-    sizeRef.current = { cols, rows, w, h };
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    sizeRef.current = { cols, rows, w, h, dpr };
   }, []);
 
   const draw = useCallback(() => {
@@ -159,9 +160,10 @@ export default function InkWaveGrid() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const { cols, rows, w, h } = sizeRef.current;
+    const { cols, rows, w, h, dpr } = sizeRef.current;
     if (cols === 0) return;
 
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
     ctx.fillStyle = '#000';
 
