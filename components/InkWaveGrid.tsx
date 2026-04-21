@@ -29,9 +29,15 @@ const G = [
   [0, -1],
 ];
 
+const F2 = 0.5 * (Math.sqrt(3) - 1);
+const G2 = (3 - Math.sqrt(3)) / 6;
+
+function dot(gi: number, xx: number, yy: number): number {
+  const g = G[gi % 8];
+  return g[0] * xx + g[1] * yy;
+}
+
 function noise2d(x: number, y: number): number {
-  const F2 = 0.5 * (Math.sqrt(3) - 1);
-  const G2 = (3 - Math.sqrt(3)) / 6;
   const s = (x + y) * F2;
   const i = Math.floor(x + s);
   const j = Math.floor(y + s);
@@ -46,10 +52,6 @@ function noise2d(x: number, y: number): number {
   const y2 = y0 - 1 + 2 * G2;
   const ii = i & 255;
   const jj = j & 255;
-  function dot(gi: number, xx: number, yy: number) {
-    const g = G[gi % 8];
-    return g[0] * xx + g[1] * yy;
-  }
   let n0 = 0,
     n1 = 0,
     n2 = 0;
@@ -161,6 +163,7 @@ export default function InkWaveGrid() {
     if (cols === 0) return;
 
     ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#000';
 
     for (let col = 0; col < cols; col++) {
       for (let row = 0; row < rows; row++) {
@@ -177,11 +180,12 @@ export default function InkWaveGrid() {
         const opacity = Math.max(0.03, Math.min(1, val));
         ctx.beginPath();
         ctx.arc(cx, cy, R, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0,0,0,${opacity})`;
+        ctx.globalAlpha = opacity;
         ctx.fill();
       }
     }
 
+    ctx.globalAlpha = 1;
     tRef.current += 0.008;
     for (const b of blobsRef.current) b.age += 1;
     blobsRef.current = blobsRef.current.filter((b) => b.age < 400);
