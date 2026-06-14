@@ -159,6 +159,7 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
 
     return () => {
       const widget = widgetRef.current;
+      const iframe = iframeRef.current;
       if (widget) {
         try {
           const pref = readPref();
@@ -168,17 +169,23 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
         } catch (error) {
           console.warn('[BlogImmerse] Failed to save position on unmount:', error);
         }
-        try {
-          widget.pause();
-        } catch (error) {
-          console.warn('[BlogImmerse] Failed to pause on unmount:', error);
-        }
-        try {
-          widget.unbind(SCWidgetEvents.READY);
-          widget.unbind(SCWidgetEvents.PLAY_PROGRESS);
-          widget.unbind(SCWidgetEvents.ERROR);
-        } catch (error) {
-          console.warn('[BlogImmerse] Failed to unbind widget events:', error);
+        // On unmount React detaches the iframe before this cleanup runs, so its
+        // contentWindow is gone and any widget call (which postMessages into the
+        // iframe) throws. Only talk to the widget while the iframe is still alive;
+        // when it isn't, detaching the iframe already stopped playback.
+        if (iframe?.isConnected && iframe.contentWindow) {
+          try {
+            widget.pause();
+          } catch (error) {
+            console.warn('[BlogImmerse] Failed to pause on unmount:', error);
+          }
+          try {
+            widget.unbind(SCWidgetEvents.READY);
+            widget.unbind(SCWidgetEvents.PLAY_PROGRESS);
+            widget.unbind(SCWidgetEvents.ERROR);
+          } catch (error) {
+            console.warn('[BlogImmerse] Failed to unbind widget events:', error);
+          }
         }
         widgetRef.current = null;
       }
@@ -255,7 +262,7 @@ export default function BlogImmerse({ children, mode = 'spotlight' }: BlogImmers
         data-testid="immerse-audio-iframe"
         className="immerse-iframe-hidden"
         src={iframeSrc}
-        allow="autoplay"
+        allow="autoplay; encrypted-media"
         title="Background music"
         tabIndex={-1}
         aria-hidden="true"
