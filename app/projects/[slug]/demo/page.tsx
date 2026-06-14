@@ -35,7 +35,7 @@ export default async function ProjectDemoPage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-screen px-4 py-20 max-w-4xl mx-auto">
+    <main className="min-h-screen px-4 py-20">
       <Link
         href={`/projects/${slug}`}
         className="text-sm text-on-surface-variant hover:text-on-surface transition-colors mb-10 inline-block"
@@ -54,7 +54,7 @@ export default async function ProjectDemoPage({ params }: Props) {
           {project.title} Demo
         </h1>
 
-        <div className="bg-surface-container rounded-sm p-4 md:p-8 overflow-auto flex justify-center items-center min-h-[600px]">
+        <div className="bg-surface-container rounded-sm p-4 md:p-8">
           <Suspense
             fallback={
               <div className="text-on-surface-variant animate-pulse p-8">Loading demo...</div>
