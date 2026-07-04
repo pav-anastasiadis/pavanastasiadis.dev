@@ -34,15 +34,6 @@ export async function getAllPosts(): Promise<BlogPost[]> {
   );
 }
 
-export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  const filePath = path.join(BLOG_DIR, `${slug}.mdx`);
-  if (!fs.existsSync(filePath)) return null;
-
-  const mod = await import(`@/content/blog/${slug}.mdx`);
-  const frontmatter = mod.frontmatter as BlogFrontmatter;
-  return { slug, frontmatter };
-}
-
 export async function getAllTags(): Promise<string[]> {
   const posts = await getAllPosts();
   const tagSet = new Set<string>();
