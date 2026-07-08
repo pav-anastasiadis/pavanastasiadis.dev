@@ -3,7 +3,8 @@
 import { useEffect, useRef, useCallback } from 'react';
 
 const DOTS_PER_WIDTH = 240;
-const ASPECT = 4 / 3;
+const DEFAULT_ASPECT = 4 / 3;
+const MAX_BLOBS = 16;
 
 // Simplex-ish 2D noise setup
 const P = new Uint8Array(512);
@@ -79,19 +80,20 @@ interface Blob {
   radii: number[];
   baseR: number;
   age: number;
+  maxAge: number;
   seed: number;
 }
 
-function makeBlob(x: number, y: number, canvasW: number): Blob {
+function makeBlob(x: number, y: number, canvasW: number, scale = 1, maxAge = 400): Blob {
   const nLobes = (5 + Math.random() * 4) | 0;
   const angles: number[] = [];
   const radii: number[] = [];
-  const baseR = canvasW * (0.08 + Math.random() * 0.12);
+  const baseR = canvasW * (0.08 + Math.random() * 0.12) * scale;
   for (let i = 0; i < nLobes; i++) {
     angles.push((i / nLobes) * Math.PI * 2 + (Math.random() - 0.5) * 0.4);
     radii.push(0.5 + Math.random() * 0.8);
   }
-  return { x, y, angles, radii, baseR, age: 0, seed: Math.random() * 999 };
+  return { x, y, angles, radii, baseR, age: 0, maxAge, seed: Math.random() * 999 };
 }
 
 function blobRadius(b: Blob, angle: number): number {
@@ -103,7 +105,7 @@ function blobRadius(b: Blob, angle: number): number {
   return (r / b.angles.length) * b.baseR;
 }
 
-function blobInfluence(cx: number, cy: number, b: Blob): number {
+function blobInfluence(cx: number, cy: number, b: Blob, interference: boolean): number {
   const dx = cx - b.x;
   const dy = cy - b.y;
   const dist = Math.sqrt(dx * dx + dy * dy);
@@ -112,10 +114,16 @@ function blobInfluence(cx: number, cy: number, b: Blob): number {
   const blobR = blobRadius(b, angle) + expand;
   const edge = dist - blobR;
   const waveWidth = 18 + b.age * 0.15;
-  const wave = Math.exp(-(edge * edge) / (2 * waveWidth * waveWidth));
+  const envelope = Math.exp(-(edge * edge) / (2 * waveWidth * waveWidth));
+  const fade = Math.max(0, 1 - b.age / b.maxAge);
+  if (interference) {
+    // Signed carrier wave: crests darken, troughs lighten. Summing signed
+    // contributions lets a crest from one ripple cancel a trough from
+    // another back to equilibrium, like water.
+    return Math.sin(edge * 0.25 - b.age * 0.04) * envelope * fade * 0.55;
+  }
   const ripple = Math.sin(edge * 0.25 - b.age * 0.04) * 0.3;
-  const fade = Math.max(0, 1 - b.age / 400);
-  return (wave * 0.9 + ripple * wave * 0.4) * fade;
+  return (envelope * 0.9 + ripple * envelope * 0.4) * fade;
 }
 
 function coastWave(cx: number, cy: number, t: number, h: number): number {
@@ -128,13 +136,28 @@ function coastWave(cx: number, cy: number, t: number, h: number): number {
   return (n1 * 0.4 + n2 * 0.3) * shore + n3 * 0.15;
 }
 
-export default function InkWaveGrid() {
+interface InkWaveGridProps {
+  /** Width-to-height ratio of the dot grid. Higher = shorter band. */
+  aspect?: number;
+  /** Spawn ripples continuously while the pointer is dragged, not just on click. */
+  drag?: boolean;
+  /** Ripples are signed waves that cancel where crest meets trough. */
+  interference?: boolean;
+}
+
+export default function InkWaveGrid({
+  aspect = DEFAULT_ASPECT,
+  drag = false,
+  interference = false,
+}: InkWaveGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const blobsRef = useRef<Blob[]>([]);
   const tRef = useRef(0);
   const rafRef = useRef<number>(0);
   const sizeRef = useRef({ cols: 0, rows: 0, w: 0, h: 0, dpr: 1, gap: 0, r: 0 });
+  const draggingRef = useRef(false);
+  const lastSpawnRef = useRef({ x: 0, y: 0 });
 
   const resize = useCallback(() => {
     const container = containerRef.current;
@@ -145,7 +168,7 @@ export default function InkWaveGrid() {
     const gap = Math.max(3, Math.round(containerW / DOTS_PER_WIDTH));
     const r = Math.max(1, gap * 0.22);
     const cols = Math.max(1, Math.floor(containerW / gap));
-    const rows = Math.max(1, Math.round(cols / ASPECT));
+    const rows = Math.max(1, Math.round(cols / aspect));
     const w = cols * gap;
     const h = rows * gap;
     const dpr = window.devicePixelRatio || 1;
@@ -153,7 +176,7 @@ export default function InkWaveGrid() {
     canvas.width = w * dpr;
     canvas.height = h * dpr;
     sizeRef.current = { cols, rows, w, h, dpr, gap, r };
-  }, []);
+  }, [aspect]);
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -176,9 +199,13 @@ export default function InkWaveGrid() {
         let val = 0.08;
         val += coastWave(cx, cy, tRef.current, h) * 0.55;
 
+        let wave = 0;
         for (const b of blobsRef.current) {
-          val += blobInfluence(cx, cy, b);
+          wave += blobInfluence(cx, cy, b, interference);
         }
+        // Soft-clip the summed ripple field so stacked crests compress
+        // toward a ceiling instead of blacking out the canvas.
+        val += interference ? Math.tanh(wave * 1.2) * 0.7 : wave;
 
         const opacity = Math.max(0.03, Math.min(1, val));
         ctx.beginPath();
@@ -191,9 +218,9 @@ export default function InkWaveGrid() {
     ctx.globalAlpha = 1;
     tRef.current += 0.008;
     for (const b of blobsRef.current) b.age += 1;
-    blobsRef.current = blobsRef.current.filter((b) => b.age < 400);
+    blobsRef.current = blobsRef.current.filter((b) => b.age < b.maxAge);
     rafRef.current = requestAnimationFrame(draw);
-  }, []);
+  }, [interference]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -202,28 +229,81 @@ export default function InkWaveGrid() {
 
     resize();
 
-    const handleClick = (e: MouseEvent) => {
+    const toCanvas = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       const { w, h } = sizeRef.current;
-      const sx = w / rect.width;
-      const sy = h / rect.height;
-      blobsRef.current.push(
-        makeBlob((e.clientX - rect.left) * sx, (e.clientY - rect.top) * sy, sizeRef.current.w)
-      );
+      return {
+        x: ((e.clientX - rect.left) * w) / rect.width,
+        y: ((e.clientY - rect.top) * h) / rect.height,
+      };
+    };
+
+    const spawn = (x: number, y: number, scale = 1) => {
+      // Interference ripples originate AT the cursor (tiny initial ring that
+      // expands outward, like a raindrop) and live ~3s instead of ~6.7s.
+      const blob = interference
+        ? makeBlob(x, y, sizeRef.current.w, scale * 0.15, 180)
+        : makeBlob(x, y, sizeRef.current.w, scale);
+      blobsRef.current.push(blob);
+      if (blobsRef.current.length > MAX_BLOBS) blobsRef.current.shift();
+    };
+
+    const handleClick = (e: MouseEvent) => {
+      const p = toCanvas(e);
+      spawn(p.x, p.y);
+    };
+
+    const handlePointerDown = (e: PointerEvent) => {
+      const p = toCanvas(e);
+      spawn(p.x, p.y);
+      draggingRef.current = true;
+      lastSpawnRef.current = p;
+      canvas.setPointerCapture?.(e.pointerId);
+    };
+
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!draggingRef.current) return;
+      const p = toCanvas(e);
+      const dx = p.x - lastSpawnRef.current.x;
+      const dy = p.y - lastSpawnRef.current.y;
+      // Distance-throttled: drop a smaller ripple every ~10% of the canvas width.
+      const minDist = sizeRef.current.w * 0.1;
+      if (dx * dx + dy * dy >= minDist * minDist) {
+        spawn(p.x, p.y, 0.45);
+        lastSpawnRef.current = p;
+      }
+    };
+
+    const handlePointerUp = () => {
+      draggingRef.current = false;
     };
 
     const ro = new ResizeObserver(() => resize());
     ro.observe(container);
 
-    canvas.addEventListener('click', handleClick);
+    if (drag) {
+      canvas.addEventListener('pointerdown', handlePointerDown);
+      canvas.addEventListener('pointermove', handlePointerMove);
+      canvas.addEventListener('pointerup', handlePointerUp);
+      canvas.addEventListener('pointercancel', handlePointerUp);
+    } else {
+      canvas.addEventListener('click', handleClick);
+    }
     rafRef.current = requestAnimationFrame(draw);
 
     return () => {
       ro.disconnect();
-      canvas.removeEventListener('click', handleClick);
+      if (drag) {
+        canvas.removeEventListener('pointerdown', handlePointerDown);
+        canvas.removeEventListener('pointermove', handlePointerMove);
+        canvas.removeEventListener('pointerup', handlePointerUp);
+        canvas.removeEventListener('pointercancel', handlePointerUp);
+      } else {
+        canvas.removeEventListener('click', handleClick);
+      }
       cancelAnimationFrame(rafRef.current);
     };
-  }, [draw, resize]);
+  }, [draw, resize, drag, interference]);
 
   return (
     <div ref={containerRef} className="w-full">
@@ -231,7 +311,9 @@ export default function InkWaveGrid() {
         ref={canvasRef}
         data-testid="gif-placeholder"
         className="w-full cursor-crosshair rounded-sm"
-        style={{ height: 'auto' }}
+        // pan-y keeps vertical page scrolling alive on touch while
+        // horizontal drags feed the ripple trail.
+        style={{ height: 'auto', touchAction: drag ? 'pan-y' : 'auto' }}
       />
     </div>
   );
