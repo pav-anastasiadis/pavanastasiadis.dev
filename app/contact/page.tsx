@@ -37,7 +37,7 @@ export default function ContactPage() {
         </a>
 
         <a
-          href="mailto:pav@example.com"
+          href="mailto:email@pavanastasiadis.dev"
           data-testid="contact-email"
           className="text-primary underline hover:text-primary-dim transition-colors text-base"
         >
