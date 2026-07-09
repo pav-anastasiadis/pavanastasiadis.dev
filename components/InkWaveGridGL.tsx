@@ -5,6 +5,13 @@ import { useEffect, useRef, useState } from 'react';
 import InkWaveGrid from './InkWaveGrid';
 
 const DOTS_PER_WIDTH = 240;
+// Phone tuning: below this container width, 240 dots across lands under a
+// 3px pitch (reads as mush) and wide aspects collapse to a sliver — so the
+// grid goes coarser and the frame no wider than 4:3. Keep in sync with
+// InkWaveGrid (the 2D fallback).
+const NARROW_BREAK = 480;
+const NARROW_ASPECT = 4 / 3;
+const NARROW_DOTS_PER_WIDTH = 80;
 const DEFAULT_ASPECT = 4 / 3;
 const MAX_RIPPLES = 16;
 const RIPPLE_MAX_AGE = 180;
@@ -206,10 +213,15 @@ export default function InkWaveGridGL({
     const resize = () => {
       const containerW = container.clientWidth;
       if (!containerW) return;
-      const gap = Math.max(3, Math.round(containerW / DOTS_PER_WIDTH));
-      const r = Math.max(1, gap * 0.22);
+      const narrow = containerW < NARROW_BREAK;
+      const effAspect = narrow ? Math.min(aspect, NARROW_ASPECT) : aspect;
+      const gap = Math.max(
+        3,
+        Math.round(containerW / (narrow ? NARROW_DOTS_PER_WIDTH : DOTS_PER_WIDTH))
+      );
+      const r = Math.max(1, gap * (narrow ? 0.33 : 0.22));
       const cols = Math.max(1, Math.floor(containerW / gap));
-      const rows = Math.max(1, Math.round(cols / aspect));
+      const rows = Math.max(1, Math.round(cols / effAspect));
       const dpr = window.devicePixelRatio || 1;
       size.w = cols * gap;
       size.h = rows * gap;

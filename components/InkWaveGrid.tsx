@@ -4,6 +4,12 @@ import { useEffect, useRef, useCallback } from 'react';
 
 const DOTS_PER_WIDTH = 240;
 const DEFAULT_ASPECT = 4 / 3;
+// Phone tuning: below this container width, 240 dots across lands under a
+// 3px pitch (reads as mush) and wide aspects collapse to a sliver — so the
+// grid goes coarser and the frame no wider than 4:3.
+const NARROW_BREAK = 480;
+const NARROW_ASPECT = 4 / 3;
+const NARROW_DOTS_PER_WIDTH = 80;
 const MAX_BLOBS = 16;
 
 // Simplex-ish 2D noise setup
@@ -165,10 +171,15 @@ export default function InkWaveGrid({
     if (!container || !canvas) return;
 
     const containerW = container.clientWidth;
-    const gap = Math.max(3, Math.round(containerW / DOTS_PER_WIDTH));
-    const r = Math.max(1, gap * 0.22);
+    const narrow = containerW < NARROW_BREAK;
+    const effAspect = narrow ? Math.min(aspect, NARROW_ASPECT) : aspect;
+    const gap = Math.max(
+      3,
+      Math.round(containerW / (narrow ? NARROW_DOTS_PER_WIDTH : DOTS_PER_WIDTH))
+    );
+    const r = Math.max(1, gap * (narrow ? 0.33 : 0.22));
     const cols = Math.max(1, Math.floor(containerW / gap));
-    const rows = Math.max(1, Math.round(cols / aspect));
+    const rows = Math.max(1, Math.round(cols / effAspect));
     const w = cols * gap;
     const h = rows * gap;
     const dpr = window.devicePixelRatio || 1;

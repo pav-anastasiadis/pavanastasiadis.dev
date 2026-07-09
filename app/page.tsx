@@ -13,12 +13,12 @@ export default function HomePage() {
       <div className="text-center">
         <h1
           data-testid="hero-heading"
-          className="text-3xl font-bold tracking-tight text-on-surface mb-3"
+          className="text-2xl md:text-3xl font-bold tracking-tight text-on-surface mb-3"
           style={{ letterSpacing: '-0.02em' }}
         >
           Pavlos Anastasiadis
         </h1>
-        <p className="text-base text-on-surface-variant leading-relaxed max-w-xl mx-auto">
+        <p className="text-sm md:text-base text-on-surface-variant leading-relaxed max-w-xl mx-auto">
           Just a guy looking to make my developer workflow more awesome, build performant projects,
           and ultimately craft really awesome software.
         </p>

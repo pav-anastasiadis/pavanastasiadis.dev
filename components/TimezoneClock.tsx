@@ -40,7 +40,9 @@ export default function TimezoneClock() {
   if (!mounted) {
     return (
       <div className="text-center">
-        <p className="text-4xl font-light tracking-tight text-on-surface tabular-nums">--:--:--</p>
+        <p className="text-3xl md:text-4xl font-light tracking-tight text-on-surface tabular-nums">
+          --:--:--
+        </p>
         <p className="text-sm text-on-surface-variant mt-1">{TIMEZONE}</p>
       </div>
     );
@@ -48,7 +50,9 @@ export default function TimezoneClock() {
 
   return (
     <div className="text-center">
-      <p className="text-4xl font-light tracking-tight text-on-surface tabular-nums">{time}</p>
+      <p className="text-3xl md:text-4xl font-light tracking-tight text-on-surface tabular-nums">
+        {time}
+      </p>
       <p className="text-sm text-on-surface-variant mt-1">{date}</p>
       <p className="text-xs text-on-surface-variant mt-0.5 opacity-60">{TIMEZONE}</p>
     </div>
